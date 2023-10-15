@@ -1,0 +1,14 @@
+.view-cart-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: #68b444;
+  color: white;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+}
+
+.main-div {
+  padding-bottom: 2rem;
+}
