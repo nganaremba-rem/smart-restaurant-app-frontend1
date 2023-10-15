@@ -11,12 +11,31 @@ import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
 import BrowseMenu from "./BrowseMenu";
 import Animation from "../Animation";
 const MenuList = ({ socket, room }) => {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
+  // console.log(user);
+  if (!user) {
+    navigate("/unauthorized");
+  } else {
+    const token = user.token;
+    if (!token) {
+      // If the token is not present, redirect to Signin page
+      navigate("/unauthorized");
+    } else {
+      // Parse the token to get the expiration timestamp
+      const { exp } = JSON.parse(atob(token.split(".")[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      if (currentTime > exp) {
+        // If the token is expired, redirect to Signin page
+        navigate("/unauthorized");
+      }
+    }
+  }
   const [sortedDishes, setSortedDishes] = useState([]);
   const [cuisines, setCuisines] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const role = user.role;
-  const naviagte = useNavigate();
 
   const { cartItems, addToCart, getCartTotal, removeFromCart } =
     useContext(CartContext);
@@ -82,7 +101,7 @@ const MenuList = ({ socket, room }) => {
         &#x20B9;
         {getCartTotal()}
       </p>
-      <Button onClick={() => naviagte("/cart")} sx={{ color: "white" }}>
+      <Button onClick={() => navigate("/cart")} sx={{ color: "white" }}>
         View Cart <ShoppingCartIcon />
       </Button>
     </Box>

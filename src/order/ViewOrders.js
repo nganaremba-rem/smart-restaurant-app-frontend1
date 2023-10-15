@@ -14,6 +14,26 @@ function ViewOrders({ socket, room }) {
 
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   const role = user.role;
+
+  if (!user) {
+    navigate("/unauthorized");
+  } else {
+    const token = user.token;
+    if (!token) {
+      // If the token is not present, redirect to Signin page
+      navigate("/unauthorized");
+    } else {
+      // Parse the token to get the expiration timestamp
+      const { exp } = JSON.parse(atob(token.split(".")[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      if (currentTime > exp) {
+        // If the token is expired, redirect to Signin page
+        navigate("/unauthorized");
+      }
+    }
+  }
+
   useEffect(() => {
     let apiURL = "http://localhost:8000/api/v1/orders?";
     // console.log(JSON.parse(localStorage.getItem("SRA_userData")).token);

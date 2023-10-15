@@ -11,6 +11,7 @@ import ViewCart from "./cart/ViewCart";
 import ViewOrders from "./order/ViewOrders";
 import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
+import UnauthorizedPage from "./UnautorizedPage";
 function App() {
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   const role = user.role;
@@ -101,6 +102,10 @@ function App() {
             path="/signin"
             element={<SignIn socket={socket} room={room} />}
           ></Route>
+          <Route
+            path="/"
+            element={<SignIn socket={socket} room={room} />}
+          ></Route>
           <Route path="/signup" element={<SignUp />}></Route>
           <Route
             path="/verify-otp"
@@ -134,6 +139,7 @@ function App() {
             path="/past-orders"
             element={<PastOrders socket={socket} room={room} />}
           ></Route>
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </Router>
       <ToastContainer />
