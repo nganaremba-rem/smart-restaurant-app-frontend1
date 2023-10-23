@@ -18,7 +18,7 @@ function PlaceOrderButton({ socket, room }) {
     }));
 
     Axios.post(
-      "http://localhost:8000/api/v1/orders/",
+      "http://localhost:5000/api/v1/orders/",
       {
         user: localStorage.getItem("SRA_userData")._id,
         menuItems,

@@ -30,7 +30,7 @@ export default function SignUp() {
   async function handlePost(newUser) {
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/users/signup",
+        "http://localhost:5000/api/v1/users/signup",
         newUser
       );
 

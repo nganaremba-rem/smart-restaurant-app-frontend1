@@ -17,7 +17,7 @@ const Checkout = () => {
   const role = user.role;
   useEffect(() => {
     GetReq(
-      `http://localhost:8000/api/v1/orders?status=order_is_ready&user=${user._id}`,
+      `http://localhost:5000/api/v1/orders?status=order_is_ready&user=${user._id}`,
       setIsLoading
     )
       .then((res) => {
@@ -42,7 +42,7 @@ const Checkout = () => {
       handler: async function (response) {
         try {
           console.log("handler", response);
-          const verifyURL = "http://localhost:8000/api/payment/verify";
+          const verifyURL = "http://localhost:5000/api/payment/verify";
           const { data } = await Axios.post(verifyURL, response, {
             headers: {
               authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     try {
-      const paymentURL = "http://localhost:8000/api/payment/orders";
+      const paymentURL = "http://localhost:5000/api/payment/orders";
       const { data } = await Axios.post(
         paymentURL,
         {

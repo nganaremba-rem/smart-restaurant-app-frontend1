@@ -28,7 +28,7 @@ export default function SignIn({ socket, room }) {
   async function handlePost(user) {
     try {
       let { data } = await axios.post(
-        "http://localhost:8000/api/v1/users/signin",
+        "http://localhost:5000/api/v1/users/signin",
         user
       );
       toast.success("logged in successfully", {

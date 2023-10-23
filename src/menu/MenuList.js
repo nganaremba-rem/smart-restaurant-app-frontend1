@@ -40,7 +40,7 @@ const MenuList = ({ socket, room }) => {
   const { cartItems, addToCart, getCartTotal, removeFromCart } =
     useContext(CartContext);
   useEffect(() => {
-    GetReq("http://localhost:8000/api/v1/menuItems/?", setIsLoading)
+    GetReq("http://localhost:5000/api/v1/menuItems/?", setIsLoading)
       .then((res) => {
         let dishes = res;
         const cuisineCounts = [];

@@ -29,7 +29,7 @@ export default function VerifyOTP({ socket, room }) {
     const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/users/signup",
+        "http://localhost:5000/api/v1/users/signup",
         newUser
       );
 
@@ -60,7 +60,7 @@ export default function VerifyOTP({ socket, room }) {
     console.log(postdata);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/users/verify-otp",
+        "http://localhost:5000/api/v1/users/verify-otp",
         postdata
       );
 
