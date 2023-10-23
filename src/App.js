@@ -13,7 +13,7 @@ import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
 import UnauthorizedPage from "./UnautorizedPage";
 function App() {
-  const socket = io.connect("http://10.250.1.216:5000", {
+  const socket = io.connect("http://localhost:5000", {
     transports: ["websocket"],
   });
   const [room, setRoom] = useState(""); // Never used further
