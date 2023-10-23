@@ -29,11 +29,12 @@ export default function SignUp() {
   const navigate = useNavigate();
   async function handlePost(newUser) {
     try {
+      console.log("post user" + newUser);
       const { data } = await axios.post(
         "http://localhost:5000/api/v1/users/signup",
         newUser
       );
-      console.log(data);
+      console.log("post data" + data);
       if (data) {
         toast.success(`OTP sent to ${data.email}`, {
           position: "bottom-right",
@@ -61,6 +62,7 @@ export default function SignUp() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    console.log("submit data" + data);
     const passwordsMatch =
       data.get("password") === data.get("confirm-password");
     if (!passwordsMatch) {
@@ -80,7 +82,8 @@ export default function SignUp() {
         password: data.get("password"),
         role: "customer",
       };
-      handlePost(newUser);
+      console.log(newUser);
+      handlePost("submit user" + newUser);
     }
   };
 
