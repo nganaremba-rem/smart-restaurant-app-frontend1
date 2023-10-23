@@ -33,16 +33,15 @@ export default function SignUp() {
         "http://localhost:5000/api/v1/users/signup",
         newUser
       );
-
-      toast.success(`OTP sent to ${data.email}`, {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      });
       if (data) {
+        toast.success(`OTP sent to ${data.email}`, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        });
         localStorage.setItem("SRA_userData", JSON.stringify(data));
       }
       navigate("/verify-otp");
