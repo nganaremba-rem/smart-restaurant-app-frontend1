@@ -45,6 +45,7 @@ export default function SignUp() {
       if (data) {
         localStorage.setItem("SRA_userData", JSON.stringify(data));
       }
+      navigate("/verify-otp");
     } catch (err) {
       toast.error(`${err.response.data.message}`, {
         position: "bottom-right",
@@ -80,7 +81,6 @@ export default function SignUp() {
         role: "customer",
       };
       handlePost(newUser);
-      navigate("/verify-otp");
     }
   };
 

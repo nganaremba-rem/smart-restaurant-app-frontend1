@@ -11,6 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { Link } from "@mui/material";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
@@ -23,6 +24,38 @@ const theme = createTheme({
 
 export default function VerifyOTP({ socket, room }) {
   const navigate = useNavigate();
+
+  async function handleResend() {
+    const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8000/api/v1/users/signup",
+        newUser
+      );
+
+      toast.success(`OTP sent to ${data.email}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+      if (data) {
+        localStorage.setItem("SRA_userData", JSON.stringify(data));
+      }
+    } catch (err) {
+      toast.error(`${err.response.data.message}`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  }
+
   async function handlePost(postdata) {
     console.log(postdata);
     try {
@@ -41,8 +74,17 @@ export default function VerifyOTP({ socket, room }) {
       });
       localStorage.setItem("SRA_userData", JSON.stringify(data));
       if (data.role === "customer") {
+        socket.emit("join_customer_room", {
+          customer: data._id,
+        });
         navigate("/menu");
       } else {
+        if (data.role === "chef") {
+          socket.emit("join_chefs_room", { chef: `${data._id}` });
+        }
+        if (data.role === "waiter") {
+          socket.emit("join_waiters_room", { waiter: `${data._id}` });
+        }
         navigate("/orders");
       }
     } catch (err) {
@@ -113,6 +155,15 @@ export default function VerifyOTP({ socket, room }) {
             >
               Verify OTP
             </Button>
+            <Grid item>
+              <Link
+                variant="body2"
+                onClick={handleResend}
+                style={{ cursor: "pointer" }}
+              >
+                Resend OTP
+              </Link>
+            </Grid>
           </Box>
         </Box>
       </Container>

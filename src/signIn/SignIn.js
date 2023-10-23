@@ -43,8 +43,17 @@ export default function SignIn({ socket, room }) {
         localStorage.setItem("SRA_userData", JSON.stringify(data));
       }
       if (data.role === "customer") {
+        socket.emit("join_customer_room", {
+          customer: data._id,
+        });
         navigate("/menu");
       } else {
+        if (data.role === "chef") {
+          socket.emit("join_chefs_room", { chef: `${data._id}` });
+        }
+        if (data.role === "waiter") {
+          socket.emit("join_waiters_room", { waiter: `${data._id}` });
+        }
         navigate("/orders");
       }
     } catch (err) {

@@ -13,14 +13,17 @@ import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
 import UnauthorizedPage from "./UnautorizedPage";
 function App() {
-  const user = JSON.parse(localStorage.getItem("SRA_userData"));
-  const role = user.role;
   const socket = io.connect("http://localhost:8000", {
     transports: ["websocket"],
   });
   const [room, setRoom] = useState(""); // Never used further
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("SRA_userData"));
+    let role = "";
+    if (user) {
+      role = user.role;
+    }
     if (role === "waiter") {
       socket.emit("join_waiters_room", { waiter: `${user._id}` });
       socket.on("pick_order", (data) => {
