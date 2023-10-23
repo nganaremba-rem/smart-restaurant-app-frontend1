@@ -28,7 +28,7 @@ export default function SignIn({ socket, room }) {
   async function handlePost(user) {
     try {
       let { data } = await axios.post(
-        "http://localhost:5000/api/v1/users/signin",
+        "http://10.250.1.216:5000/api/v1/users/signin",
         user
       );
       if (data) {
@@ -57,7 +57,7 @@ export default function SignIn({ socket, room }) {
         navigate("/orders");
       }
     } catch (err) {
-      toast.error(`error`, {
+      toast.error(`${err.response.data.message}`, {
         position: "bottom-right",
         autoClose: 3000,
         hideProgressBar: false,
