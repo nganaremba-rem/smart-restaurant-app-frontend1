@@ -31,15 +31,15 @@ export default function SignIn({ socket, room }) {
         "http://localhost:5000/api/v1/users/signin",
         user
       );
-      toast.success("logged in successfully", {
-        position: "bottom-right",
-        autoClose: 4000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        progress: undefined,
-        theme: "light",
-      });
       if (data) {
+        toast.success("logged in successfully", {
+          position: "bottom-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          progress: undefined,
+          theme: "light",
+        });
         localStorage.setItem("SRA_userData", JSON.stringify(data));
       }
       if (data.role === "customer") {
