@@ -57,7 +57,7 @@ export default function SignIn({ socket, room }) {
         navigate("/orders");
       }
     } catch (err) {
-      toast.error(`${err.response.data.message}`, {
+      toast.error(`error`, {
         position: "bottom-right",
         autoClose: 3000,
         hideProgressBar: false,
