@@ -33,6 +33,7 @@ export default function SignUp() {
         "http://localhost:5000/api/v1/users/signup",
         newUser
       );
+      console.log(data);
       if (data) {
         toast.success(`OTP sent to ${data.email}`, {
           position: "bottom-right",
