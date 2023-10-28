@@ -16,14 +16,14 @@ function PlaceOrderButton({ socket, room }) {
       menuName: obj._id,
       quantity: obj.quantity,
     }));
-
+    const randomTable = Math.floor(Math.random() * 10);
     Axios.post(
       "http://10.250.1.216:5000/api/v1/orders/",
       {
         user: localStorage.getItem("SRA_userData")._id,
         menuItems,
         totalAmount: getCartTotal(),
-        tableNumber: Math.floor(Math.random() * 10),
+        tableNumber: randomTable,
       },
       {
         headers: {
@@ -33,7 +33,7 @@ function PlaceOrderButton({ socket, room }) {
     )
       .then((res) => {
         socket.emit("order_placed", {
-          tableNumber: 1,
+          tableNumber: randomTable,
         });
         toast.success("Order placed successfully", {
           position: "bottom-right",
