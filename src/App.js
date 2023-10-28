@@ -13,12 +13,13 @@ import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
 import UnauthorizedPage from "./UnautorizedPage";
 function App() {
-  const socket = io.connect("http://10.250.1.216:5000", {
+  let socket = io.connect("http://10.250.1.216:5000", {
     transports: ["websocket"],
   });
   const [room, setRoom] = useState(""); // Never used further
 
   useEffect(() => {
+    console.log("socket");
     const user = JSON.parse(localStorage.getItem("SRA_userData"));
     let role = "";
     if (user) {
@@ -27,6 +28,7 @@ function App() {
     if (role === "waiter") {
       socket.emit("join_waiters_room", { waiter: `${user._id}` });
       socket.on("pick_order", (data) => {
+        console.log("pick_order");
         toast.info(data, {
           position: "bottom-right",
           autoClose: 5000,
