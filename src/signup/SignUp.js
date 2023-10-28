@@ -31,7 +31,7 @@ export default function SignUp() {
     try {
       console.log("post user" + newUser);
       const { data } = await axios.post(
-        "http://localhost:5000/api/v1/users/signup",
+        "http://10.250.1.216:5000/api/v1/users/signup",
         newUser
       );
       console.log("post data" + data);
@@ -83,7 +83,7 @@ export default function SignUp() {
         role: "customer",
       };
       console.log(newUser);
-      handlePost("submit user" + newUser);
+      handlePost(newUser);
     }
   };
 

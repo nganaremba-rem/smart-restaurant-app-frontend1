@@ -35,7 +35,7 @@ function ViewOrders({ socket, room }) {
   }
 
   useEffect(() => {
-    let apiURL = "http://localhost:5000/api/v1/orders?";
+    let apiURL = "http://10.250.1.216:5000/api/v1/orders?";
     // console.log(JSON.parse(localStorage.getItem("SRA_userData")).token);
     apiURL += state.length > 0 ? `status=${state}&` : "";
     //  "waiter", "chef", "manager", "admin", "owner"

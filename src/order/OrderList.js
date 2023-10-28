@@ -9,7 +9,7 @@ const OrderList = ({ orders, role, setOrders, socket }) => {
   // Add conditional rendering based on role
   const deleteOrder = async (orderId) => {
     try {
-      await DeleteReq(`http://localhost:5000/api/v1/orders/${orderId}`);
+      await DeleteReq(`http://10.250.1.216:5000/api/v1/orders/${orderId}`);
       const arr = orders.filter((x) => x._id !== orderId);
       setOrders(arr);
       toast.success("Order cancelled successfully", {
@@ -36,7 +36,7 @@ const OrderList = ({ orders, role, setOrders, socket }) => {
     try {
       const token = JSON.parse(localStorage.getItem("SRA_userData")).token;
       await Axios.patch(
-        `http://localhost:5000/api/v1/orders/${orderId}`,
+        `http://10.250.1.216:5000/api/v1/orders/${orderId}`,
         body,
         {
           headers: {
