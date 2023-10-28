@@ -83,7 +83,7 @@ export default function SignUp() {
         role: "customer",
       };
       console.log(newUser);
-      handlePost("submit user" + newUser);
+      handlePost(newUser);
     }
   };
 
