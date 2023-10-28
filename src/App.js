@@ -17,8 +17,7 @@ function App() {
     transports: ["websocket"],
   });
   const [room, setRoom] = useState(""); // Never used further
-
-  useEffect(() => {
+  socket.on("connect", () => {
     console.log("socket");
     const user = JSON.parse(localStorage.getItem("SRA_userData"));
     let role = "";
@@ -97,7 +96,7 @@ function App() {
         });
       });
     }
-  }, [socket]);
+  });
   return (
     <>
       <Router>
