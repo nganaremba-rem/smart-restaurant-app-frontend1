@@ -63,6 +63,7 @@ function App() {
         customer: user._id,
       });
       socket.on("waiter_confirmed", (data) => {
+        console.log(data);
         toast.info(data, {
           position: "bottom-right",
           autoClose: 5000,
