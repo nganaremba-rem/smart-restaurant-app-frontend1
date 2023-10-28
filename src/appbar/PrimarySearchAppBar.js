@@ -107,11 +107,9 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      {
-        <MenuItem onClick={() => naviagte("/past-orders")}>
-          Past Orders
-        </MenuItem>
-      }
+
+      <MenuItem onClick={() => naviagte("/past-orders")}>Past Orders</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
@@ -260,17 +258,6 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
                 Orders Placed
               </Button>
             )}
-            <IconButton
-              onClick={handleLogout}
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              color="inherit"
-            >
-              Logout
-            </IconButton>
             <IconButton
               size="large"
               edge="end"
