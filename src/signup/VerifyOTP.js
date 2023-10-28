@@ -25,6 +25,20 @@ const theme = createTheme({
 
 export default function VerifyOTP() {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("SRA_userData"));
+  if (user) {
+    const token = user.token;
+    if (
+      token &&
+      Math.floor(Date.now() / 1000) > JSON.parse(atob(token.split(".")[1]))
+    ) {
+      if (user.role === "customer") {
+        navigate("/menu");
+      } else {
+        navigate("/orders");
+      }
+    }
+  }
   const socket = React.useContext(SocketContext);
   async function handleResend() {
     const newUser = JSON.parse(localStorage.getItem("SRA_userData"));

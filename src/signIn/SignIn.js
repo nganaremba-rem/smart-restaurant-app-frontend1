@@ -27,6 +27,20 @@ const theme = createTheme({
 export default function SignIn() {
   const navigate = useNavigate();
   const socket = React.useContext(SocketContext);
+  const user = JSON.parse(localStorage.getItem("SRA_userData"));
+  if (user) {
+    const token = user.token;
+    if (
+      token &&
+      Math.floor(Date.now() / 1000) > JSON.parse(atob(token.split(".")[1]))
+    ) {
+      if (user.role === "customer") {
+        navigate("/menu");
+      } else {
+        navigate("/orders");
+      }
+    }
+  }
   async function handlePost(user) {
     try {
       let { data } = await axios.post(

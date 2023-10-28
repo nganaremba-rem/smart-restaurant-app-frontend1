@@ -77,6 +77,10 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
     handleMobileMenuClose();
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("SRA_userData");
+    naviagte("/signin");
+  };
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -99,6 +103,9 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={handleLogout}>
+        <p>Logout</p>
+      </MenuItem>
       {
         <MenuItem onClick={() => naviagte("/past-orders")}>
           Past Orders
@@ -175,6 +182,9 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
+        <p>Logout</p>
       </MenuItem>
     </Menu>
   );
