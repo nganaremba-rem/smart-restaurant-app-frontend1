@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { SocketContext } from "../context/socket";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -22,9 +24,9 @@ const theme = createTheme({
     fontFamily: ["Amaranth", "sans-serif"].join(","),
   },
 });
-export default function SignIn({ socket, room }) {
+export default function SignIn() {
   const navigate = useNavigate();
-
+  const socket = React.useContext(SocketContext);
   async function handlePost(user) {
     try {
       let { data } = await axios.post(

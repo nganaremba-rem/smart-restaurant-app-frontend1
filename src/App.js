@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import io from "socket.io-client";
 import SignIn from "./signIn/SignIn";
 import SignUp from "./signup/SignUp";
 import VerifyOTP from "./signup/VerifyOTP";
@@ -12,20 +11,16 @@ import ViewOrders from "./order/ViewOrders";
 import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
 import UnauthorizedPage from "./UnautorizedPage";
+import { SocketContext } from "./context/socket";
+
 function App() {
-  let socket = io.connect("http://10.250.1.216:5000", {
-    transports: ["websocket"],
-  });
-  const [room, setRoom] = useState(""); // Never used further
-  socket.on("connect", () => {
-    console.log("socket");
-    const user = JSON.parse(localStorage.getItem("SRA_userData"));
-    let role = "";
-    if (user) {
-      role = user.role;
-    } else {
-      return;
-    }
+  const socket = useContext(SocketContext);
+  const user = JSON.parse(localStorage.getItem("SRA_userData"));
+  let role = "";
+  if (user) {
+    role = user.role;
+  }
+  useEffect(() => {
     if (role === "waiter") {
       socket.emit("join_waiters_room", { waiter: `${user._id}` });
       socket.on("pick_order", (data) => {
@@ -98,30 +93,21 @@ function App() {
         });
       });
     }
-  });
+  }, [socket]);
   return (
     <>
       <Router>
         <Routes>
           <Route path="/checkout" element={<Checkout />}></Route>
-          <Route
-            path="/signin"
-            element={<SignIn socket={socket} room={room} />}
-          ></Route>
-          <Route
-            path="/"
-            element={<SignIn socket={socket} room={room} />}
-          ></Route>
+          <Route path="/signin" element={<SignIn />}></Route>
+          <Route path="/" element={<SignIn />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
-          <Route
-            path="/verify-otp"
-            element={<VerifyOTP socket={socket} room={room} />}
-          ></Route>
+          <Route path="/verify-otp" element={<VerifyOTP />}></Route>
           <Route
             path="/menu"
             element={
               <CartProvider>
-                <MenuList socket={socket} room={room} />
+                <MenuList />
               </CartProvider>
             }
           ></Route>
@@ -129,7 +115,7 @@ function App() {
             path="/cart"
             element={
               <CartProvider>
-                <ViewCart socket={socket} room={room} />
+                <ViewCart />
               </CartProvider>
             }
           ></Route>
@@ -137,14 +123,11 @@ function App() {
             path="/orders"
             element={
               <CartProvider>
-                <ViewOrders socket={socket} room={room} />
+                <ViewOrders />
               </CartProvider>
             }
           ></Route>
-          <Route
-            path="/past-orders"
-            element={<PastOrders socket={socket} room={room} />}
-          ></Route>
+          <Route path="/past-orders" element={<PastOrders />}></Route>
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </Router>

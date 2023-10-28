@@ -1,6 +1,6 @@
 import Cart from "./Cart";
 import { useNavigate } from "react-router-dom";
-export default function ViewCart({ socket, room }) {
+export default function ViewCart() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   if (!user) {
@@ -25,7 +25,7 @@ export default function ViewCart({ socket, room }) {
 
   return (
     <div className="main-div">
-      <Cart socket={socket} room={room} />
+      <Cart />
     </div>
   );
 }

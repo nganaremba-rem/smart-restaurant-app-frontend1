@@ -5,7 +5,10 @@ import Axios from "axios";
 import Modal from "./Modal";
 import { CartContext } from "../context/Cart";
 import { Button } from "@mui/material";
-function PlaceOrderButton({ socket, room }) {
+import { SocketContext } from "../context/socket";
+
+function PlaceOrderButton() {
+  const socket = useContext(SocketContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { cartItems, getCartTotal, clearCart } = useContext(CartContext);
 

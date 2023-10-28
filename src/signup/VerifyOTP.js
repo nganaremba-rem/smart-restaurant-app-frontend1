@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { Link } from "@mui/material";
+import { SocketContext } from "../context/socket";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
@@ -22,9 +23,9 @@ const theme = createTheme({
   },
 });
 
-export default function VerifyOTP({ socket, room }) {
+export default function VerifyOTP() {
   const navigate = useNavigate();
-
+  const socket = React.useContext(SocketContext);
   async function handleResend() {
     const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
     try {

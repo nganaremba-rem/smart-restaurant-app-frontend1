@@ -4,9 +4,11 @@ import Axios from "axios";
 import SingleOrder from "./SingleOrder";
 import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
+import { SocketContext } from "../context/socket";
 
-const OrderList = ({ orders, role, setOrders, socket }) => {
+const OrderList = ({ orders, role, setOrders }) => {
   // Add conditional rendering based on role
+  const socket = React.useContext(SocketContext);
   const deleteOrder = async (orderId) => {
     try {
       await DeleteReq(`http://10.250.1.216:5000/api/v1/orders/${orderId}`);

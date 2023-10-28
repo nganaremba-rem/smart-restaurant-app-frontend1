@@ -4,7 +4,7 @@ import OrderList from "./OrderList";
 import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
 import { Box } from "@mui/material";
 import Animation from "../Animation";
-function PastOrders({ socket, room }) {
+function PastOrders() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 

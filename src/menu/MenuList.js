@@ -10,7 +10,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
 import BrowseMenu from "./BrowseMenu";
 import Animation from "../Animation";
-const MenuList = ({ socket, room }) => {
+const MenuList = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   // console.log(user);

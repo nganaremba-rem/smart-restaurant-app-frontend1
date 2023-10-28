@@ -6,7 +6,7 @@ import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DropDown from "./DropDown";
 import Animation from "../Animation";
-function ViewOrders({ socket, room }) {
+function ViewOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [state, setState] = useState("");
@@ -87,12 +87,7 @@ function ViewOrders({ socket, room }) {
           </Button>
         )}
       </Box>
-      <OrderList
-        orders={orders}
-        role={role}
-        setOrders={setOrders}
-        socket={socket}
-      />
+      <OrderList orders={orders} role={role} setOrders={setOrders} />
     </div>
   );
 }
