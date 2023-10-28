@@ -21,77 +21,57 @@ function App() {
     role = user.role;
   }
   useEffect(() => {
+    socket.on("pick_order", (data) => {
+      console.log("pick_order");
+      toast.info(data, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+    });
+    socket.on("chef_ended", (data) => {
+      toast.info(data, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+    });
+    socket.on("waiter_confirmed", (data) => {
+      toast.info(data, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+    });
+    socket.on("chef_started", (data) => {
+      toast.info(data, {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+        theme: "light",
+      });
+    });
+
     if (role === "waiter") {
       socket.emit("join_waiters_room", { waiter: `${user._id}` });
-      socket.on("pick_order", (data) => {
-        console.log("pick_order");
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
-      });
-      socket.on("chef_ended", (data) => {
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
-      });
     }
     if (role === "chef") {
       socket.emit("join_chefs_room", { chef: `${user._id}` });
-      socket.on("waiter_confirmed", (data) => {
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
-      });
     }
     if (role === "customer") {
       socket.emit("join_customer_room", {
         customer: user._id,
-      });
-      socket.on("waiter_confirmed", (data) => {
-        console.log(data);
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
-      });
-      socket.on("chef_started", (data) => {
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
-      });
-      socket.on("chef_ended", (data) => {
-        toast.info(data, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          progress: undefined,
-          theme: "light",
-        });
       });
     }
   }, [socket]);
