@@ -30,6 +30,7 @@ export default function SignIn() {
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   if (user) {
     const token = user.token;
+
     if (
       token &&
       Math.floor(Date.now() / 1000) < JSON.parse(atob(token.split(".")[1]))
@@ -39,6 +40,8 @@ export default function SignIn() {
       } else {
         navigate("/orders");
       }
+      console.log(Math.floor(Date.now() / 1000));
+      console.log(JSON.parse(atob(token.split(".")[1])));
     }
   }
   async function handlePost(user) {
