@@ -32,7 +32,7 @@ export default function SignUp() {
     const token = user.token;
     if (
       token &&
-      Math.floor(Date.now() / 1000) < JSON.parse(atob(token.split(".")[1]))
+      Math.floor(Date.now() / 1000) < JSON.parse(atob(token.split(".")[1]).exp)
     ) {
       if (user.role === "customer") {
         navigate("/menu");
