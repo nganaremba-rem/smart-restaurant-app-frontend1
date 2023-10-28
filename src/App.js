@@ -23,6 +23,8 @@ function App() {
     let role = "";
     if (user) {
       role = user.role;
+    } else {
+      return;
     }
     if (role === "waiter") {
       socket.emit("join_waiters_room", { waiter: `${user._id}` });
