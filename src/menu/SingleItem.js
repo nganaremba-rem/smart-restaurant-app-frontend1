@@ -130,7 +130,9 @@ export default function SingleItem({
         >
           <Typography>
             {description} <br></br> <b>calories: {menuItem.calories}</b>{" "}
-            <br></br> {preparationTime && <p>preparationTime</p>}
+            <br></br> {preparationTime && <p>preparationTime: </p>}
+            {preparationTime}
+            {preparationTime && <p>mins</p>}
           </Typography>
         </Box>
         <CardMedia
