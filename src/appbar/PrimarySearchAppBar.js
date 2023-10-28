@@ -17,6 +17,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import { SocketContext } from "../context/socket";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -64,6 +65,7 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
   const naviagte = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const socket = React.useContext(SocketContext);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -80,6 +82,7 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
 
   const handleLogout = () => {
     localStorage.removeItem("SRA_userData");
+    socket.emit("leave_all_rooms");
     naviagte("/signin");
   };
   const handleMobileMenuOpen = (event) => {
