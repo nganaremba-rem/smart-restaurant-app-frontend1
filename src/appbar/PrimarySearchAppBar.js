@@ -65,7 +65,7 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
   const naviagte = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const socket = useContext(SocketContext);
+  const socket = React.useContext(SocketContext);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
