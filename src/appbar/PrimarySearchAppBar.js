@@ -109,7 +109,6 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
 
       <MenuItem onClick={() => naviagte("/past-orders")}>Past Orders</MenuItem>
-      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 
