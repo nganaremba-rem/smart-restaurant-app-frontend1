@@ -261,6 +261,17 @@ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
               </Button>
             )}
             <IconButton
+              onClick={handleLogout}
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              color="inherit"
+            >
+              Logout
+            </IconButton>
+            <IconButton
               size="large"
               edge="end"
               aria-label="account of current user"
