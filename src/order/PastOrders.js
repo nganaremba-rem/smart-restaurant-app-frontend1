@@ -38,7 +38,6 @@ function PastOrders() {
         orders={orders}
         role={role}
         setOrders={setOrders}
-        socket={socket}
         page="past-orders"
       />
     </div>
