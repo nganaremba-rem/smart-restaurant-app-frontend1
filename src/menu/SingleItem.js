@@ -26,6 +26,7 @@ export default function SingleItem({
   let description = menuItem.description;
   let spiciness = menuItem.spicinessLevel;
   let imageURL = menuItem.imageURL;
+  let preparationTime = menuItem.preparationTime;
   let isVeg = menuItem.isVeg ? "veg.png" : "non-veg.png";
   let starColor;
   if (itemRating >= 4) {
@@ -128,7 +129,8 @@ export default function SingleItem({
           }}
         >
           <Typography>
-            {description} <b>calories: {menuItem.calories}</b>
+            {description} <br></br> <b>calories: {menuItem.calories}</b>{" "}
+            <br></br> {preparationTime && <p>preparationTime</p>}
           </Typography>
         </Box>
         <CardMedia
