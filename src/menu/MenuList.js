@@ -40,7 +40,7 @@ const MenuList = () => {
   const { cartItems, addToCart, getCartTotal, removeFromCart } =
     useContext(CartContext);
   useEffect(() => {
-    GetReq("http://10.250.1.216:5000/api/v1/menuItems/?", setIsLoading)
+    GetReq("https://smartmess.iitdh.ac.in/restaurant/", setIsLoading)
       .then((res) => {
         let dishes = res;
         const cuisineCounts = [];

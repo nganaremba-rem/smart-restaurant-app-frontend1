@@ -11,7 +11,7 @@ function PastOrders() {
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   const role = user.role;
   useEffect(() => {
-    let apiURL = "http://10.250.1.216:5000/api/v1/orders?";
+    let apiURL = "https://smartmess.iitdh.ac.in/restaurant/api/v1/orders?";
     if (role === "customer") {
       apiURL += `sort=-createdAt&user=${user._id}&status=payment_done`;
     }

@@ -47,7 +47,7 @@ export default function VerifyOTP() {
     const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
     try {
       const { data } = await axios.post(
-        "http://10.250.1.216:5000/api/v1/users/signup",
+        "https://smartmess.iitdh.ac.in/restaurant/api/v1/users/signup",
         newUser
       );
 
@@ -78,7 +78,7 @@ export default function VerifyOTP() {
     console.log(postdata);
     try {
       const { data } = await axios.post(
-        "http://10.250.1.216:5000/api/v1/users/verify-otp",
+        "https://smartmess.iitdh.ac.in/restaurant/api/v1/users/verify-otp",
         postdata
       );
 

@@ -38,7 +38,7 @@ const OrderList = ({ orders, role, setOrders }) => {
     try {
       const token = JSON.parse(localStorage.getItem("SRA_userData")).token;
       await Axios.patch(
-        `http://10.250.1.216:5000/api/v1/orders/${orderId}`,
+        `https://smartmess.iitdh.ac.in/restaurant/api/v1/orders/${orderId}`,
         body,
         {
           headers: {

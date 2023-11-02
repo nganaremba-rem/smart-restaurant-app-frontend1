@@ -21,7 +21,7 @@ function PlaceOrderButton() {
     }));
     const randomTable = Math.floor(Math.random() * 10);
     Axios.post(
-      "http://10.250.1.216:5000/api/v1/orders/",
+      "https://smartmess.iitdh.ac.in/restaurant/api/v1/orders/",
       {
         user: localStorage.getItem("SRA_userData")._id,
         menuItems,

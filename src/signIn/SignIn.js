@@ -48,7 +48,7 @@ export default function SignIn() {
   async function handlePost(user) {
     try {
       let { data } = await axios.post(
-        "http://10.250.1.216:5000/api/v1/users/signin",
+        "https://smartmess.iitdh.ac.in/restaurant/api/v1/users/signin",
         user
       );
       if (data) {

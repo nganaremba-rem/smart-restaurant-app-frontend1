@@ -17,7 +17,7 @@ const Checkout = () => {
   const role = user.role;
   useEffect(() => {
     GetReq(
-      `http://10.250.1.216:5000/api/v1/orders?status=order_is_ready&user=${user._id}`,
+      `https://smartmess.iitdh.ac.in/restaurant/api/v1/orders?status=order_is_ready&user=${user._id}`,
       setIsLoading
     )
       .then((res) => {
