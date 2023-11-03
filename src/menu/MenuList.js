@@ -40,7 +40,7 @@ const MenuList = () => {
   const { cartItems, addToCart, getCartTotal, removeFromCart } =
     useContext(CartContext);
   useEffect(() => {
-    GetReq("http://10.250.1.216/restaurant/", setIsLoading)
+    GetReq("http://10.250.1.216:5000/restaurant/api/v1/menuItems", setIsLoading)
       .then((res) => {
         let dishes = res;
         const cuisineCounts = [];
