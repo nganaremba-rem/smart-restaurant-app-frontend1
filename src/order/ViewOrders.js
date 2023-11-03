@@ -36,7 +36,7 @@ function ViewOrders() {
   }, []);
 
   useEffect(() => {
-    let apiURL = "https://smartmess.iitdh.ac.in/restaurant/api/v1/orders?";
+    let apiURL = "http://10.250.1.216/restaurant/api/v1/orders?";
     // console.log(JSON.parse(localStorage.getItem("SRA_userData")).token);
     apiURL += state.length > 0 ? `status=${state}&` : "";
     //  "waiter", "chef", "manager", "admin", "owner"

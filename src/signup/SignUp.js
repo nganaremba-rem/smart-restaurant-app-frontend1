@@ -48,7 +48,7 @@ export default function SignUp() {
     try {
       console.log("post user" + newUser);
       const { data } = await axios.post(
-        "https://smartmess.iitdh.ac.in/restaurant/api/v1/users/signup",
+        "http://10.250.1.216/restaurant/api/v1/users/signup",
         newUser
       );
       console.log("post data" + data);

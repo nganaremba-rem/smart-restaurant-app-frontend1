@@ -28,7 +28,7 @@ export default function RateOrderDialog({ order }) {
       let rating = hashMap[_id];
       try {
         await Axios.post(
-          `https://smartmess.iitdh.ac.in/restaurant/api/v1/menuItems/rating/${_id}`,
+          `http://10.250.1.216/restaurant/api/v1/menuItems/rating/${_id}`,
           { rating: rating },
           {
             headers: {
@@ -42,7 +42,7 @@ export default function RateOrderDialog({ order }) {
     }
     try {
       await Axios.patch(
-        `https://smartmess.iitdh.ac.in/restaurant/api/v1/orders/${order._id}`,
+        `http://10.250.1.216/restaurant/api/v1/orders/${order._id}`,
         {
           isRated: true,
         },
