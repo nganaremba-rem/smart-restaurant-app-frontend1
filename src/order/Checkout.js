@@ -17,7 +17,7 @@ const Checkout = () => {
   const role = user.role;
   useEffect(() => {
     GetReq(
-      `http://10.250.1.216/restaurant/api/v1/orders?status=order_is_ready&user=${user._id}`,
+      `http://10.250.1.216:5000/restaurant/api/v1/orders?status=order_is_ready&user=${user._id}`,
       setIsLoading
     )
       .then((res) => {
