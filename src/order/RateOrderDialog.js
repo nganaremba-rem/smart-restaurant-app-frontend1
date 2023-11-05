@@ -8,6 +8,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Rating from "@mui/material/Rating";
 import Axios from "axios";
+import Config from "../config/Config";
 import { useNavigate } from "react-router-dom";
 export default function RateOrderDialog({ order }) {
   const [open, setOpen] = React.useState(false);
@@ -28,7 +29,7 @@ export default function RateOrderDialog({ order }) {
       let rating = hashMap[_id];
       try {
         await Axios.post(
-          `http://localhost:5000/api/v1/menuItems/rating/${_id}`,
+          `${Config.API_BASE_URL}menuItems/rating/${_id}`,
           { rating: rating },
           {
             headers: {
@@ -42,7 +43,7 @@ export default function RateOrderDialog({ order }) {
     }
     try {
       await Axios.patch(
-        `http://localhost:5000/api/v1/orders/${order._id}`,
+        `${Config.API_BASE_URL}orders/${order._id}`,
         {
           isRated: true,
         },

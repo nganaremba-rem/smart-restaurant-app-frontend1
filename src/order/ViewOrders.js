@@ -6,7 +6,8 @@ import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DropDown from "./DropDown";
 import Animation from "../Animation";
-function ViewOrders({ socket, room }) {
+import Config from "../config/Config.js";
+function ViewOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [state, setState] = useState("");
@@ -14,28 +15,29 @@ function ViewOrders({ socket, room }) {
 
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   const role = user.role;
-
-  if (!user) {
-    navigate("/unauthorized");
-  } else {
-    const token = user.token;
-    if (!token) {
-      // If the token is not present, redirect to Signin page
+  React.useEffect(() => {
+    if (!user) {
       navigate("/unauthorized");
     } else {
-      // Parse the token to get the expiration timestamp
-      const { exp } = JSON.parse(atob(token.split(".")[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-
-      if (currentTime > exp) {
-        // If the token is expired, redirect to Signin page
+      const token = user.token;
+      if (!token) {
+        // If the token is not present, redirect to Signin page
         navigate("/unauthorized");
+      } else {
+        // Parse the token to get the expiration timestamp
+        const { exp } = JSON.parse(atob(token.split(".")[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+
+        if (currentTime > exp) {
+          // If the token is expired, redirect to Signin page
+          navigate("/unauthorized");
+        }
       }
     }
-  }
+  }, []);
 
   useEffect(() => {
-    let apiURL = "http://localhost:5000/api/v1/orders?";
+    let apiURL = `${Config.API_BASE_URL}orders?`;
     // console.log(JSON.parse(localStorage.getItem("SRA_userData")).token);
     apiURL += state.length > 0 ? `status=${state}&` : "";
     //  "waiter", "chef", "manager", "admin", "owner"
@@ -87,12 +89,7 @@ function ViewOrders({ socket, room }) {
           </Button>
         )}
       </Box>
-      <OrderList
-        orders={orders}
-        role={role}
-        setOrders={setOrders}
-        socket={socket}
-      />
+      <OrderList orders={orders} role={role} setOrders={setOrders} />
     </div>
   );
 }

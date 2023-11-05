@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import App from "./App";
 import "./index.css";
+import { SocketContext, socket } from "./context/socket";
 
 const theme = createTheme({
   palette: {
@@ -51,6 +52,8 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ThemeProvider theme={theme}>
-    <App />
+    <SocketContext.Provider value={socket}>
+      <App />
+    </SocketContext.Provider>
   </ThemeProvider>
 );

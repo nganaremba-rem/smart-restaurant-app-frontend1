@@ -12,7 +12,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
+import Config from "../config/Config";
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
   palette: {
@@ -27,11 +27,28 @@ const theme = createTheme({
 
 export default function SignUp() {
   const navigate = useNavigate();
+  React.useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("SRA_userData"));
+    if (user) {
+      const token = user.token;
+      if (
+        token &&
+        Math.floor(Date.now() / 1000) <
+          JSON.parse(atob(token.split(".")[1])).exp
+      ) {
+        if (user.role === "customer") {
+          navigate("/menu");
+        } else {
+          navigate("/orders");
+        }
+      }
+    }
+  }, []);
   async function handlePost(newUser) {
     try {
       console.log("post user" + newUser);
       const { data } = await axios.post(
-        "http://localhost:5000/api/v1/users/signup",
+        `${Config.API_BASE_URL}users/signup`,
         newUser
       );
       console.log("post data" + data);

@@ -7,6 +7,7 @@ import GetReq from "../GetReq";
 import { Button } from "@mui/material";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import Config from "../config/Config";
 const Checkout = () => {
   const token = JSON.parse(localStorage.getItem("SRA_userData")).token;
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Checkout = () => {
   const role = user.role;
   useEffect(() => {
     GetReq(
-      `http://localhost:5000/api/v1/orders?status=order_is_ready&user=${user._id}`,
+      `${Config.API_BASE_URL}orders?status=order_is_ready&user=${user._id}`,
       setIsLoading
     )
       .then((res) => {
@@ -42,7 +43,7 @@ const Checkout = () => {
       handler: async function (response) {
         try {
           console.log("handler", response);
-          const verifyURL = "http://localhost:5000/api/payment/verify";
+          const verifyURL = `${Config.API_BASE_URL}payment/verify`;
           const { data } = await Axios.post(verifyURL, response, {
             headers: {
               authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     try {
-      const paymentURL = "http://localhost:5000/api/payment/orders";
+      const paymentURL = `${Config.API_BASE_URL}payment/orders`;
       const { data } = await Axios.post(
         paymentURL,
         {

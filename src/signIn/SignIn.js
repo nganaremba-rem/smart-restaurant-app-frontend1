@@ -12,6 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { SocketContext } from "../context/socket";
+import Config from "../config/Config";
 const theme = createTheme({
   palette: {
     primary: {
@@ -22,13 +24,31 @@ const theme = createTheme({
     fontFamily: ["Amaranth", "sans-serif"].join(","),
   },
 });
-export default function SignIn({ socket, room }) {
+export default function SignIn() {
   const navigate = useNavigate();
+  const socket = React.useContext(SocketContext);
+  React.useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("SRA_userData"));
+    if (user) {
+      const token = user.token;
+      if (
+        token &&
+        Math.floor(Date.now() / 1000) <
+          JSON.parse(atob(token.split(".")[1])).exp
+      ) {
+        if (user.role === "customer") {
+          navigate("/menu");
+        } else {
+          navigate("/orders");
+        }
+      }
+    }
+  }, []);
 
   async function handlePost(user) {
     try {
       let { data } = await axios.post(
-        "http://localhost:5000/api/v1/users/signin",
+        `${Config.API_BASE_URL}users/signin`,
         user
       );
       if (data) {

@@ -5,7 +5,10 @@ import Axios from "axios";
 import Modal from "./Modal";
 import { CartContext } from "../context/Cart";
 import { Button } from "@mui/material";
-function PlaceOrderButton({ socket, room }) {
+import { SocketContext } from "../context/socket";
+import Config from "../config/Config";
+function PlaceOrderButton() {
+  const socket = useContext(SocketContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { cartItems, getCartTotal, clearCart } = useContext(CartContext);
 
@@ -16,14 +19,14 @@ function PlaceOrderButton({ socket, room }) {
       menuName: obj._id,
       quantity: obj.quantity,
     }));
-
+    const randomTable = Math.floor(Math.random() * 10);
     Axios.post(
-      "http://localhost:5000/api/v1/orders/",
+      `${Config.API_BASE_URL}orders/`,
       {
         user: localStorage.getItem("SRA_userData")._id,
         menuItems,
         totalAmount: getCartTotal(),
-        tableNumber: Math.floor(Math.random() * 10),
+        tableNumber: randomTable,
       },
       {
         headers: {
@@ -33,7 +36,7 @@ function PlaceOrderButton({ socket, room }) {
     )
       .then((res) => {
         socket.emit("order_placed", {
-          tableNumber: 1,
+          tableNumber: randomTable,
         });
         toast.success("Order placed successfully", {
           position: "bottom-right",

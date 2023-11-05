@@ -4,12 +4,14 @@ import Axios from "axios";
 import SingleOrder from "./SingleOrder";
 import { Typography } from "@mui/material";
 import { toast } from "react-toastify";
-
-const OrderList = ({ orders, role, setOrders, socket }) => {
+import { SocketContext } from "../context/socket";
+import Config from "../config/Config";
+const OrderList = ({ orders, role, setOrders }) => {
   // Add conditional rendering based on role
+  const socket = React.useContext(SocketContext);
   const deleteOrder = async (orderId) => {
     try {
-      await DeleteReq(`http://localhost:5000/api/v1/orders/${orderId}`);
+      await DeleteReq(`${Config.API_BASE_URL}orders/${orderId}`);
       const arr = orders.filter((x) => x._id !== orderId);
       setOrders(arr);
       toast.success("Order cancelled successfully", {
@@ -35,15 +37,11 @@ const OrderList = ({ orders, role, setOrders, socket }) => {
   const updateOrder = async (orderId, body) => {
     try {
       const token = JSON.parse(localStorage.getItem("SRA_userData")).token;
-      await Axios.patch(
-        `http://localhost:5000/api/v1/orders/${orderId}`,
-        body,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await Axios.patch(`${Config.API_BASE_URL}orders/${orderId}`, body, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       if (body.status === "confirmed_by_waiter") {
         socket.emit("order_confirmed", {
           customer: `${body.user}`,

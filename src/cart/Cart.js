@@ -8,7 +8,7 @@ import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import TocIcon from "@mui/icons-material/Toc";
 import PlaceOrderButton from "./PlaceOrderButton";
 import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar";
-export default function Cart({ socket, room }) {
+export default function Cart() {
   const { cartItems, addToCart, removeFromCart, getCartTotal } =
     useContext(CartContext);
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
@@ -162,7 +162,7 @@ export default function Cart({ socket, room }) {
               </Typography>
             </div>
             <div>
-              <PlaceOrderButton socket={socket} room={room} />
+              <PlaceOrderButton />
             </div>
           </Box>
         ) : (
