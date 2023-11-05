@@ -6,6 +6,7 @@ import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DropDown from "./DropDown";
 import Animation from "../Animation";
+import Config from "../config/Config.js";
 function ViewOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -36,7 +37,7 @@ function ViewOrders() {
   }, []);
 
   useEffect(() => {
-    let apiURL = "http://10.250.1.216:5000/restaurant/api/v1/orders?";
+    let apiURL = `${Config.API_BASE_URL}orders?`;
     // console.log(JSON.parse(localStorage.getItem("SRA_userData")).token);
     apiURL += state.length > 0 ? `status=${state}&` : "";
     //  "waiter", "chef", "manager", "admin", "owner"

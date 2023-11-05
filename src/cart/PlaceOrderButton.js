@@ -6,7 +6,7 @@ import Modal from "./Modal";
 import { CartContext } from "../context/Cart";
 import { Button } from "@mui/material";
 import { SocketContext } from "../context/socket";
-
+import Config from "../config/Config";
 function PlaceOrderButton() {
   const socket = useContext(SocketContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +21,7 @@ function PlaceOrderButton() {
     }));
     const randomTable = Math.floor(Math.random() * 10);
     Axios.post(
-      "http://10.250.1.216:5000/restaurant/api/v1/orders/",
+      `${Config.API_BASE_URL}orders/`,
       {
         user: localStorage.getItem("SRA_userData")._id,
         menuItems,

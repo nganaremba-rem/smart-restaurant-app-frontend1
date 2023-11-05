@@ -4,6 +4,7 @@ import OrderList from "./OrderList";
 import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
 import { Box } from "@mui/material";
 import Animation from "../Animation";
+import Config from "../config/Config.js";
 function PastOrders() {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +12,7 @@ function PastOrders() {
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
   const role = user.role;
   useEffect(() => {
-    let apiURL = "http://10.250.1.216:5000/restaurant/api/v1/orders?";
+    let apiURL = `${Config.API_BASE_URL}orders?`;
     if (role === "customer") {
       apiURL += `sort=-createdAt&user=${user._id}&status=payment_done`;
     }

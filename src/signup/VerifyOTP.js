@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { Link } from "@mui/material";
 import { SocketContext } from "../context/socket";
-
+import Config from "../config/Config";
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
   palette: {
@@ -47,7 +47,7 @@ export default function VerifyOTP() {
     const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
     try {
       const { data } = await axios.post(
-        "http://10.250.1.216:5000/restaurant/api/v1/users/signup",
+        `${Config.API_BASE_URL}users/signup`,
         newUser
       );
 
@@ -78,7 +78,7 @@ export default function VerifyOTP() {
     console.log(postdata);
     try {
       const { data } = await axios.post(
-        "http://10.250.1.216:5000/restaurant/api/v1/users/verify-otp",
+        `${Config.API_BASE_URL}users/verify-otp`,
         postdata
       );
 

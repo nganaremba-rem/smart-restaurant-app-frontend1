@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { SocketContext } from "../context/socket";
-
+import Config from "../config/Config";
 const theme = createTheme({
   palette: {
     primary: {
@@ -48,7 +48,7 @@ export default function SignIn() {
   async function handlePost(user) {
     try {
       let { data } = await axios.post(
-        "http://10.250.1.216:5000/restaurant/api/v1/users/signin",
+        `${Config.API_BASE_URL}users/signin`,
         user
       );
       if (data) {

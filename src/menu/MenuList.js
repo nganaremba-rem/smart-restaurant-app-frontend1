@@ -10,6 +10,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
 import BrowseMenu from "./BrowseMenu";
 import Animation from "../Animation";
+import Config from "../config/Config.js";
 const MenuList = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("SRA_userData"));
@@ -40,7 +41,7 @@ const MenuList = () => {
   const { cartItems, addToCart, getCartTotal, removeFromCart } =
     useContext(CartContext);
   useEffect(() => {
-    GetReq("http://10.250.1.216:5000/restaurant/api/v1/menuItems", setIsLoading)
+    GetReq(`${Config.API_BASE_URL}menuItems`, setIsLoading)
       .then((res) => {
         let dishes = res;
         const cuisineCounts = [];

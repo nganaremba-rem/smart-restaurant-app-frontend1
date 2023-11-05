@@ -12,7 +12,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
+import Config from "../config/Config";
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
   palette: {
@@ -48,7 +48,7 @@ export default function SignUp() {
     try {
       console.log("post user" + newUser);
       const { data } = await axios.post(
-        "http://10.250.1.216:5000/restaurant/api/v1/users/signup",
+        `${Config.API_BASE_URL}users/signup`,
         newUser
       );
       console.log("post data" + data);
