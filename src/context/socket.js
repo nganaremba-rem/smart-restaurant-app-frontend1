@@ -9,7 +9,11 @@ if (x.includes("smart-restaurant-app-backend.vercel.app")) {
 }
 
 // export const socket = io("http://localhost:5000");
-export const socket = io("https://smart-restaurant-app-backend.vercel.app");
+export const socket = io(
+	"https://smart-restaurant-app-backend-vk9x.onrender.com",
+);
+
+console.log("logging");
 
 socket.on("connect", () => {
 	console.log("Socket connected", socket.id);

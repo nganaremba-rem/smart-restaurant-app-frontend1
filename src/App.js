@@ -5,6 +5,7 @@ import UnauthorizedPage from "./UnautorizedPage";
 import ViewCart from "./cart/ViewCart";
 import { CartProvider } from "./context/Cart";
 import { SocketContext } from "./context/socket";
+import { socket } from "./context/socket";
 import MenuList from "./menu/MenuList";
 import Checkout from "./order/Checkout";
 import PastOrders from "./order/PastOrders";
@@ -14,7 +15,7 @@ import SignUp from "./signup/SignUp";
 import VerifyOTP from "./signup/VerifyOTP";
 
 function App() {
-	const socket = useContext(SocketContext);
+	// const socket = useContext(SocketContext);
 	const user = JSON.parse(localStorage.getItem("SRA_userData"));
 	let role = "";
 	if (user) {
