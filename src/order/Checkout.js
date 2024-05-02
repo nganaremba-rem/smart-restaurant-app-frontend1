@@ -37,6 +37,7 @@ const Checkout = () => {
 				console.log(err);
 			});
 	}, []);
+
 	const initPayment = (data) => {
 		const options = {
 			key: "rzp_test_Tb71Sk5BeKgT4A",
