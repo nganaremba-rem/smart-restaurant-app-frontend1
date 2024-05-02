@@ -16,6 +16,7 @@ const Checkout = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const user = JSON.parse(localStorage.getItem("SRA_userData"));
 	const role = user.role;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		GetReq(
 			`${Config.API_BASE_URL}orders?status=order_is_ready&user=${user._id}`,
@@ -25,7 +26,11 @@ const Checkout = () => {
 				setOrders(res);
 				console.log(res);
 				let temp = 0;
-				res.map((x) => (temp += x.totalAmount));
+
+				for (const x of res) {
+					temp += x.totalAmount;
+				}
+				// res.map((x) => (temp += x.totalAmount));
 				setTotal(Math.round(temp));
 			})
 			.catch((err) => {
@@ -40,7 +45,7 @@ const Checkout = () => {
 			name: "Smart Restaurant App",
 			description: "Smart Restaurant App checkout",
 			order_id: data.id,
-			handler: async function (response) {
+			handler: async (response) => {
 				try {
 					console.log("handler", response);
 					const verifyURL = `${Config.API_BASE_URL}payment/verify`;
