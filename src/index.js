@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { SocketContext, socket } from "./context/socket";
 import "./index.css";
+import AuthProvider from "./context/AuthProvider";
 
 const theme = createTheme({
 	palette: {
@@ -51,9 +52,11 @@ const theme = createTheme({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-	<ThemeProvider theme={theme}>
-		<SocketContext.Provider value={socket}>
-			<App />
-		</SocketContext.Provider>
-	</ThemeProvider>,
+	<SocketContext.Provider value={socket}>
+		<ThemeProvider theme={theme}>
+			<AuthProvider>
+				<App />
+			</AuthProvider>
+		</ThemeProvider>
+	</SocketContext.Provider>,
 );

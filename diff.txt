@@ -1,0 +1,2259 @@
+diff --git a/src/Animation.js b/src/Animation.js
+index 76597f0..56a8bd0 100644
+--- a/src/Animation.js
++++ b/src/Animation.js
+@@ -1,16 +1,11 @@
+ import React from "react";
+ 
+ function Animation() {
+-  return (
+-    <div className="center">
+-      <img
+-        src="animation2.gif"
+-        alt="animation"
+-        height="100%"
+-        width="100%"
+-      ></img>
+-    </div>
+-  );
++	return (
++		<div className="center">
++			<img src="animation2.gif" alt="animation" height="100%" width="100%" />
++		</div>
++	);
+ }
+ 
+ export default Animation;
+diff --git a/src/App.js b/src/App.js
+index 056f928..f27350d 100644
+--- a/src/App.js
++++ b/src/App.js
+@@ -1,119 +1,74 @@
+-import { useContext, useEffect } from "react";
+ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+-import { ToastContainer, toast } from "react-toastify";
++import { ToastContainer } from "react-toastify";
+ import UnauthorizedPage from "./UnautorizedPage";
+ import ViewCart from "./cart/ViewCart";
++import ProtectedRoutes from "./components/ProtectedRoutes";
++import UnProtectedRoutes from "./components/UnProtectedRoutes";
+ import { CartProvider } from "./context/Cart";
+-import { SocketContext } from "./context/socket";
+-import { socket } from "./context/socket";
++import useSocket from "./hooks/useSocket";
+ import MenuList from "./menu/MenuList";
+ import Checkout from "./order/Checkout";
+ import PastOrders from "./order/PastOrders";
+ import ViewOrders from "./order/ViewOrders";
++import NotFound from "./pages/NotFound";
+ import SignIn from "./signIn/SignIn";
+ import SignUp from "./signup/SignUp";
+ import VerifyOTP from "./signup/VerifyOTP";
+ 
+ function App() {
+-	// const socket = useContext(SocketContext);
+-	const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-	let role = "";
+-	if (user) {
+-		role = user.role;
+-	}
+-	useEffect(() => {
+-		socket.on("pick_order", (data) => {
+-			console.log("pick_order");
+-			toast.info(data, {
+-				position: "bottom-right",
+-				autoClose: 5000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
+-		});
+-		socket.on("chef_ended", (data) => {
+-			toast.info(data, {
+-				position: "bottom-right",
+-				autoClose: 5000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
+-		});
+-		socket.on("waiter_confirmed", (data) => {
+-			toast.info(data, {
+-				position: "bottom-right",
+-				autoClose: 5000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
+-		});
+-		socket.on("chef_started", (data) => {
+-			toast.info(data, {
+-				position: "bottom-right",
+-				autoClose: 5000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
+-		});
++	useSocket();
+ 
+-		if (role === "waiter") {
+-			socket.emit("join_waiters_room", { waiter: `${user._id}` });
+-		}
+-		if (role === "chef") {
+-			socket.emit("join_chefs_room", { chef: `${user._id}` });
+-		}
+-		if (role === "customer") {
+-			socket.emit("join_customer_room", {
+-				customer: user._id,
+-			});
+-		}
+-	}, [socket, role, user]);
+ 	return (
+ 		<>
+ 			<Router>
+ 				<Routes>
+-					<Route path="/checkout" element={<Checkout />} />
+-					<Route path="/signin" element={<SignIn />} />
+-					<Route path="/" element={<SignIn />} />
+-					<Route path="/signup" element={<SignUp />} />
+-					<Route path="/verify-otp" element={<VerifyOTP />} />
+-					<Route
+-						path="/menu"
+-						element={
+-							<CartProvider>
+-								<MenuList />
+-							</CartProvider>
+-						}
+-					/>
+-					<Route
+-						path="/cart"
+-						element={
+-							<CartProvider>
+-								<ViewCart />
+-							</CartProvider>
+-						}
+-					/>
+-					<Route
+-						path="/orders"
+-						element={
+-							<CartProvider>
+-								<ViewOrders />
+-							</CartProvider>
+-						}
+-					/>
+-					<Route path="/past-orders" element={<PastOrders />} />
++					<Route element={<UnProtectedRoutes />}>
++						<Route path="/signin" element={<SignIn />} />
++						<Route path="/signup" element={<SignUp />} />
++					</Route>
++					<Route element={<ProtectedRoutes />}>
++						{/* <Route path="/" element={<SignIn />} /> */}
++						<Route
++							path="/"
++							element={
++								<CartProvider>
++									<MenuList />
++								</CartProvider>
++							}
++						/>
++						<Route path="/checkout" element={<Checkout />} />
++						<Route path="/verify-otp" element={<VerifyOTP />} />
++						<Route
++							path="/cart"
++							element={
++								<CartProvider>
++									<ViewCart />
++								</CartProvider>
++							}
++						/>
++						<Route
++							path="/orders"
++							element={
++								<CartProvider>
++									<ViewOrders />
++								</CartProvider>
++							}
++						/>
++						<Route path="/past-orders" element={<PastOrders />} />
++					</Route>
+ 					<Route path="/unauthorized" element={<UnauthorizedPage />} />
++					<Route path="*" element={<NotFound />} />
+ 				</Routes>
+ 			</Router>
+-			<ToastContainer />
++
++			<ToastContainer
++				position="bottom-right"
++				autoClose={4000}
++				hideProgressBar={false}
++				closeOnClick={true}
++				progress={undefined}
++				theme="light"
++			/>
+ 		</>
+ 	);
+ }
+diff --git a/src/appbar/PrimarySearchAppBar.js b/src/appbar/PrimarySearchAppBar.js
+index 176a705..00cc86c 100644
+--- a/src/appbar/PrimarySearchAppBar.js
++++ b/src/appbar/PrimarySearchAppBar.js
+@@ -1,290 +1,287 @@
+-import * as React from "react";
+-import { styled, alpha } from "@mui/material/styles";
++import AccountCircle from "@mui/icons-material/AccountCircle";
++import MoreIcon from "@mui/icons-material/MoreVert";
++import NotificationsIcon from "@mui/icons-material/Notifications";
++import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
++import SearchIcon from "@mui/icons-material/Search";
++import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
++import { Button } from "@mui/material";
+ import AppBar from "@mui/material/AppBar";
++import Badge from "@mui/material/Badge";
+ import Box from "@mui/material/Box";
+-import Toolbar from "@mui/material/Toolbar";
+ import IconButton from "@mui/material/IconButton";
+-import Typography from "@mui/material/Typography";
+ import InputBase from "@mui/material/InputBase";
+-import Badge from "@mui/material/Badge";
+-import MenuItem from "@mui/material/MenuItem";
+ import Menu from "@mui/material/Menu";
+-import SearchIcon from "@mui/icons-material/Search";
+-import AccountCircle from "@mui/icons-material/AccountCircle";
+-import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
+-import NotificationsIcon from "@mui/icons-material/Notifications";
+-import MoreIcon from "@mui/icons-material/MoreVert";
+-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
++import MenuItem from "@mui/material/MenuItem";
++import Toolbar from "@mui/material/Toolbar";
++import Typography from "@mui/material/Typography";
++import { alpha, styled } from "@mui/material/styles";
++import * as React from "react";
+ import { useNavigate } from "react-router-dom";
+-import { Button } from "@mui/material";
+-import { SocketContext } from "../context/socket";
++import { SocketContext, socket } from "../context/socket";
++import useAuth from "../hooks/useAuth";
+ 
+ const Search = styled("div")(({ theme }) => ({
+-  position: "relative",
+-  borderRadius: theme.shape.borderRadius,
+-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+-  "&:hover": {
+-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+-  },
+-  marginRight: theme.spacing(2),
+-  marginLeft: 0,
+-  width: "100%",
+-  [theme.breakpoints.up("sm")]: {
+-    marginLeft: theme.spacing(3),
+-    width: "auto",
+-  },
++	position: "relative",
++	borderRadius: theme.shape.borderRadius,
++	backgroundColor: alpha(theme.palette.common.white, 0.15),
++	"&:hover": {
++		backgroundColor: alpha(theme.palette.common.white, 0.25),
++	},
++	marginRight: theme.spacing(2),
++	marginLeft: 0,
++	width: "100%",
++	[theme.breakpoints.up("sm")]: {
++		marginLeft: theme.spacing(3),
++		width: "auto",
++	},
+ }));
+ 
+ const SearchIconWrapper = styled("div")(({ theme }) => ({
+-  padding: theme.spacing(0, 2),
+-  height: "100%",
+-  position: "absolute",
+-  pointerEvents: "none",
+-  display: "flex",
+-  alignItems: "center",
+-  justifyContent: "center",
++	padding: theme.spacing(0, 2),
++	height: "100%",
++	position: "absolute",
++	pointerEvents: "none",
++	display: "flex",
++	alignItems: "center",
++	justifyContent: "center",
+ }));
+ 
+ const StyledInputBase = styled(InputBase)(({ theme }) => ({
+-  color: "inherit",
+-  "& .MuiInputBase-input": {
+-    padding: theme.spacing(1, 1, 1, 0),
+-    // vertical padding + font size from searchIcon
+-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+-    transition: theme.transitions.create("width"),
+-    width: "100%",
+-    [theme.breakpoints.up("md")]: {
+-      width: "20ch",
+-    },
+-  },
++	color: "inherit",
++	"& .MuiInputBase-input": {
++		padding: theme.spacing(1, 1, 1, 0),
++		// vertical padding + font size from searchIcon
++		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
++		transition: theme.transitions.create("width"),
++		width: "100%",
++		[theme.breakpoints.up("md")]: {
++			width: "20ch",
++		},
++	},
+ }));
+ 
+ export default function PrimarySearchAppBar({ numberOfCartItems, role }) {
+-  const [anchorEl, setAnchorEl] = React.useState(null);
+-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+-  const naviagte = useNavigate();
+-  const isMenuOpen = Boolean(anchorEl);
+-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+-  const socket = React.useContext(SocketContext);
++	const [anchorEl, setAnchorEl] = React.useState(null);
++	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
++	const navigate = useNavigate();
++	const isMenuOpen = Boolean(anchorEl);
++	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
++	const { logout } = useAuth();
+ 
+-  const handleProfileMenuOpen = (event) => {
+-    setAnchorEl(event.currentTarget);
+-  };
++	const handleProfileMenuOpen = (event) => {
++		setAnchorEl(event.currentTarget);
++	};
+ 
+-  const handleMobileMenuClose = () => {
+-    setMobileMoreAnchorEl(null);
+-  };
++	const handleMobileMenuClose = () => {
++		setMobileMoreAnchorEl(null);
++	};
+ 
+-  const handleMenuClose = () => {
+-    setAnchorEl(null);
+-    handleMobileMenuClose();
+-  };
++	const handleMenuClose = () => {
++		setAnchorEl(null);
++		handleMobileMenuClose();
++	};
+ 
+-  const handleLogout = () => {
+-    localStorage.removeItem("SRA_userData");
+-    socket.emit("leave_all_rooms");
+-    naviagte("/signin");
+-  };
+-  const handleMobileMenuOpen = (event) => {
+-    setMobileMoreAnchorEl(event.currentTarget);
+-  };
++	const handleMobileMenuOpen = (event) => {
++		setMobileMoreAnchorEl(event.currentTarget);
++	};
+ 
+-  const menuId = "primary-search-account-menu";
+-  const renderMenu = (
+-    <Menu
+-      anchorEl={anchorEl}
+-      anchorOrigin={{
+-        vertical: "top",
+-        horizontal: "right",
+-      }}
+-      id={menuId}
+-      keepMounted
+-      transformOrigin={{
+-        vertical: "top",
+-        horizontal: "right",
+-      }}
+-      open={isMenuOpen}
+-      onClose={handleMenuClose}
+-    >
+-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
++	const menuId = "primary-search-account-menu";
++	const renderMenu = (
++		<Menu
++			anchorEl={anchorEl}
++			anchorOrigin={{
++				vertical: "top",
++				horizontal: "right",
++			}}
++			id={menuId}
++			keepMounted
++			transformOrigin={{
++				vertical: "top",
++				horizontal: "right",
++			}}
++			open={isMenuOpen}
++			onClose={handleMenuClose}
++		>
++			<MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+ 
+-      <MenuItem onClick={() => naviagte("/past-orders")}>Past Orders</MenuItem>
+-    </Menu>
+-  );
++			<MenuItem onClick={() => navigate("/past-orders")}>Past Orders</MenuItem>
++			<MenuItem onClick={logout}>Logout</MenuItem>
++		</Menu>
++	);
+ 
+-  const mobileMenuId = "primary-search-account-menu-mobile";
+-  const renderMobileMenu = (
+-    <Menu
+-      anchorEl={mobileMoreAnchorEl}
+-      anchorOrigin={{
+-        vertical: "top",
+-        horizontal: "right",
+-      }}
+-      id={mobileMenuId}
+-      keepMounted
+-      transformOrigin={{
+-        vertical: "top",
+-        horizontal: "right",
+-      }}
+-      open={isMobileMenuOpen}
+-      onClose={handleMobileMenuClose}
+-    >
+-      <MenuItem>
+-        <IconButton
+-          size="large"
+-          aria-label="show 4 new mails"
+-          color="inherit"
+-          onClick={() => naviagte("/cart")}
+-        >
+-          <Badge badgeContent={numberOfCartItems} color="error">
+-            <ShoppingCartIcon />
+-          </Badge>
+-        </IconButton>
+-        <p>Messages</p>
+-      </MenuItem>
+-      {(role === "waiter" || role === "chef") && (
+-        <MenuItem>
+-          <IconButton
+-            size="large"
+-            aria-label="show 17 new notifications"
+-            color="inherit"
+-          >
+-            <Badge badgeContent={17} color="error">
+-              <NotificationsIcon />
+-            </Badge>
+-          </IconButton>
+-          <p>Notifications</p>
+-        </MenuItem>
+-      )}
+-      {role === "customer" && (
+-        <Button
+-          onClick={() => naviagte("/orders")}
+-          variant="outlined"
+-          style={{
+-            color: "#563c38",
+-            borderColor: "#563c38",
+-            marginLeft: "5px",
+-          }}
+-        >
+-          Orders Placed
+-        </Button>
+-      )}
+-      <MenuItem onClick={handleProfileMenuOpen}>
+-        <IconButton
+-          size="large"
+-          aria-label="account of current user"
+-          aria-controls="primary-search-account-menu"
+-          aria-haspopup="true"
+-          color="inherit"
+-        >
+-          <AccountCircle />
+-        </IconButton>
+-        <p>Profile</p>
+-      </MenuItem>
+-      <MenuItem onClick={handleLogout}>
+-        <p>Logout</p>
+-      </MenuItem>
+-    </Menu>
+-  );
++	const mobileMenuId = "primary-search-account-menu-mobile";
++	const renderMobileMenu = (
++		<Menu
++			anchorEl={mobileMoreAnchorEl}
++			anchorOrigin={{
++				vertical: "top",
++				horizontal: "right",
++			}}
++			id={mobileMenuId}
++			keepMounted
++			transformOrigin={{
++				vertical: "top",
++				horizontal: "right",
++			}}
++			open={isMobileMenuOpen}
++			onClose={handleMobileMenuClose}
++		>
++			<MenuItem>
++				<IconButton
++					size="large"
++					aria-label="show 4 new mails"
++					color="inherit"
++					onClick={() => navigate("/cart")}
++				>
++					<Badge badgeContent={numberOfCartItems} color="error">
++						<ShoppingCartIcon />
++					</Badge>
++				</IconButton>
++				<p>Messages</p>
++			</MenuItem>
++			{(role === "waiter" || role === "chef") && (
++				<MenuItem>
++					<IconButton
++						size="large"
++						aria-label="show 17 new notifications"
++						color="inherit"
++					>
++						<Badge badgeContent={17} color="error">
++							<NotificationsIcon />
++						</Badge>
++					</IconButton>
++					<p>Notifications</p>
++				</MenuItem>
++			)}
++			{role === "customer" && (
++				<Button
++					onClick={() => navigate("/orders")}
++					variant="outlined"
++					style={{
++						color: "#563c38",
++						borderColor: "#563c38",
++						marginLeft: "5px",
++					}}
++				>
++					Orders Placed
++				</Button>
++			)}
++			<MenuItem onClick={handleProfileMenuOpen}>
++				<IconButton
++					size="large"
++					aria-label="account of current user"
++					aria-controls="primary-search-account-menu"
++					aria-haspopup="true"
++					color="inherit"
++				>
++					<AccountCircle />
++				</IconButton>
++				<p>Profile</p>
++			</MenuItem>
++			<MenuItem onClick={logout}>
++				<p>Logout</p>
++			</MenuItem>
++		</Menu>
++	);
+ 
+-  return (
+-    <Box sx={{ flexGrow: 1 }}>
+-      <AppBar
+-        position="fixed"
+-        style={{ backgroundColor: "#f2eceb", color: "#563c38" }}
+-      >
+-        <Toolbar>
+-          <IconButton
+-            size="large"
+-            edge="start"
+-            color="inherit"
+-            aria-label="open drawer"
+-            sx={{ mr: 2 }}
+-            onClick={() => naviagte("/menu")}
+-          >
+-            <RestaurantMenuIcon />
+-          </IconButton>
+-          <Typography
+-            variant="h5"
+-            noWrap
+-            component="div"
+-            sx={{ display: { xs: "none", sm: "block" } }}
+-            style={{ color: "#ff841c" }}
+-          >
+-            Smart Restaurant App
+-          </Typography>
+-          <Search style={{ backgroundColor: "#f2f2f2" }}>
+-            <SearchIconWrapper>
+-              <SearchIcon />
+-            </SearchIconWrapper>
+-            <StyledInputBase
+-              placeholder="Search…"
+-              inputProps={{ "aria-label": "search" }}
+-            />
+-          </Search>
+-          <Box sx={{ flexGrow: 1 }} />
+-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+-            <IconButton
+-              size="large"
+-              aria-label="show 4 new mails"
+-              color="inherit"
+-              onClick={() => naviagte("/cart")}
+-            >
+-              <Badge badgeContent={numberOfCartItems} color="error">
+-                <ShoppingCartIcon />
+-              </Badge>
+-            </IconButton>
+-            {(role === "chef" || role === "waiter") && (
+-              <IconButton
+-                size="large"
+-                aria-label="show 17 new notifications"
+-                color="inherit"
+-              >
+-                <Badge badgeContent={17} color="error">
+-                  <NotificationsIcon />
+-                </Badge>
+-              </IconButton>
+-            )}
+-            {role === "customer" && (
+-              <Button
+-                onClick={() => naviagte("/orders")}
+-                variant="outlined"
+-                style={{
+-                  color: "#563c38",
+-                  borderColor: "#563c38",
+-                }}
+-              >
+-                Orders Placed
+-              </Button>
+-            )}
+-            <IconButton
+-              size="large"
+-              edge="end"
+-              aria-label="account of current user"
+-              aria-controls={menuId}
+-              aria-haspopup="true"
+-              onClick={handleProfileMenuOpen}
+-              color="inherit"
+-            >
+-              <AccountCircle />
+-            </IconButton>
+-          </Box>
+-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+-            <IconButton
+-              size="large"
+-              aria-label="show more"
+-              aria-controls={mobileMenuId}
+-              aria-haspopup="true"
+-              onClick={handleMobileMenuOpen}
+-              color="inherit"
+-            >
+-              <MoreIcon />
+-            </IconButton>
+-          </Box>
+-        </Toolbar>
+-      </AppBar>
+-      {renderMobileMenu}
+-      {renderMenu}
+-    </Box>
+-  );
++	return (
++		<Box sx={{ flexGrow: 1 }}>
++			<AppBar
++				position="fixed"
++				style={{ backgroundColor: "#f2eceb", color: "#563c38" }}
++			>
++				<Toolbar>
++					<IconButton
++						size="large"
++						edge="start"
++						color="inherit"
++						aria-label="open drawer"
++						sx={{ mr: 2 }}
++						onClick={() => navigate("/")}
++					>
++						<RestaurantMenuIcon />
++					</IconButton>
++					<Typography
++						variant="h5"
++						noWrap
++						component="div"
++						sx={{ display: { xs: "none", sm: "block" } }}
++						style={{ color: "#ff841c" }}
++					>
++						Smart Restaurant App
++					</Typography>
++					<Search style={{ backgroundColor: "#f2f2f2" }}>
++						<SearchIconWrapper>
++							<SearchIcon />
++						</SearchIconWrapper>
++						<StyledInputBase
++							placeholder="Search…"
++							inputProps={{ "aria-label": "search" }}
++						/>
++					</Search>
++					<Box sx={{ flexGrow: 1 }} />
++					<Box sx={{ display: { xs: "none", md: "flex" } }}>
++						<IconButton
++							size="large"
++							aria-label="show 4 new mails"
++							color="inherit"
++							onClick={() => navigate("/cart")}
++						>
++							<Badge badgeContent={numberOfCartItems} color="error">
++								<ShoppingCartIcon />
++							</Badge>
++						</IconButton>
++						{(role === "chef" || role === "waiter") && (
++							<IconButton
++								size="large"
++								aria-label="show 17 new notifications"
++								color="inherit"
++							>
++								<Badge badgeContent={17} color="error">
++									<NotificationsIcon />
++								</Badge>
++							</IconButton>
++						)}
++						{role === "customer" && (
++							<Button
++								onClick={() => navigate("/orders")}
++								variant="outlined"
++								style={{
++									color: "#563c38",
++									borderColor: "#563c38",
++								}}
++							>
++								Orders Placed
++							</Button>
++						)}
++						<IconButton
++							size="large"
++							edge="end"
++							aria-label="account of current user"
++							aria-controls={menuId}
++							aria-haspopup="true"
++							onClick={handleProfileMenuOpen}
++							color="inherit"
++						>
++							<AccountCircle />
++						</IconButton>
++					</Box>
++					<Box sx={{ display: { xs: "flex", md: "none" } }}>
++						<IconButton
++							size="large"
++							aria-label="show more"
++							aria-controls={mobileMenuId}
++							aria-haspopup="true"
++							onClick={handleMobileMenuOpen}
++							color="inherit"
++						>
++							<MoreIcon />
++						</IconButton>
++					</Box>
++				</Toolbar>
++			</AppBar>
++			{renderMobileMenu}
++			{renderMenu}
++		</Box>
++	);
+ }
+diff --git a/src/cart/Cart.js b/src/cart/Cart.js
+index 957a414..f7a0045 100644
+--- a/src/cart/Cart.js
++++ b/src/cart/Cart.js
+@@ -1,176 +1,176 @@
+-import { useContext } from "react";
+-import { CartContext } from "../context/Cart";
+-import { useNavigate } from "react-router-dom";
+-import { Button, Typography, Box } from "@mui/material";
+ import AddIcon from "@mui/icons-material/Add";
+ import RemoveIcon from "@mui/icons-material/Remove";
+ import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
+ import TocIcon from "@mui/icons-material/Toc";
+-import PlaceOrderButton from "./PlaceOrderButton";
++import { Box, Button, Typography } from "@mui/material";
++import { useContext } from "react";
++import { useNavigate } from "react-router-dom";
+ import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar";
++import { CartContext } from "../context/Cart";
++import PlaceOrderButton from "./PlaceOrderButton";
+ export default function Cart() {
+-  const { cartItems, addToCart, removeFromCart, getCartTotal } =
+-    useContext(CartContext);
+-  const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-  const role = user.role;
+-  const navigate = useNavigate();
+-  return (
+-    <Box
+-      style={{
+-        width: "100%",
+-        textAlign: "center",
+-      }}
+-    >
+-      <PrimarySearchAppBar numberOfCartItems={cartItems.length} role={role} />
+-      <Box
+-        style={{ display: "inline-block", margin: "0 auto", marginTop: "5em" }}
+-        sx={{
+-          width: {
+-            xs: "100%",
+-            sm: "100%",
+-            md: "30%",
+-            lg: "35%",
+-            xl: "35%",
+-          },
+-        }}
+-      >
+-        <Box
+-          style={{
+-            display: "flex",
+-            justifyContent: "space-between",
+-            borderBottom: "2px solid #D3D3D3",
+-            paddingBottom: "15px",
+-          }}
+-        >
+-          <Button
+-            onClick={() => navigate("/menu")}
+-            variant="outlined"
+-            style={{
+-              color: "#ff841c",
+-              borderColor: "#ff841c",
+-              backgroundColor: "transparent",
+-              marginRight: "5%",
+-            }}
+-          >
+-            Menu <RestaurantMenuIcon />
+-          </Button>
+-          <Button
+-            onClick={() => navigate("/orders")}
+-            variant="outlined"
+-            style={{
+-              color: "#ff841c",
+-              borderColor: "#ff841c",
+-              backgroundColor: "transparent",
+-            }}
+-          >
+-            Orders <TocIcon />
+-          </Button>
+-        </Box>
+-        <Box style={{ marginTop: "30px", borderBottom: "2px solid #D3D3D3" }}>
+-          {cartItems.map((item) => (
+-            <div key={item._id}>
+-              <Box
+-                style={{
+-                  display: "flex",
+-                }}
+-              >
+-                <div
+-                  style={{
+-                    marginBottom: "20px",
+-                    width: "50%",
+-                    textAlign: "left",
+-                  }}
+-                >
+-                  <img
+-                    src={item.isVeg ? "veg.png" : "non-veg.png"}
+-                    width="20px"
+-                    height="20px"
+-                    style={{ position: "relative", top: "5px" }}
+-                    alt={item.name}
+-                  />
+-                  <Typography display="inline-block">{item.name} </Typography>
+-                </div>
+-                <div style={{ width: "25%" }}>
+-                  <Button
+-                    disableRipple
+-                    variant="contained"
+-                    style={{
+-                      color: "#6cb752",
+-                      backgroundColor: "white",
+-                      height: "25px",
+-                      width: "100px",
+-                    }}
+-                  >
+-                    <Button
+-                      disableRipple
+-                      style={{
+-                        backgroundColor: "transparent",
+-                        color: "gray",
+-                        height: "20px",
+-                        overflow: "hidden",
+-                      }}
+-                      onClick={() => {
+-                        removeFromCart(item);
+-                      }}
+-                    >
+-                      <RemoveIcon />
+-                    </Button>
+-                    {item.quantity}
+-                    <Button
+-                      disableRipple
+-                      variant="text"
+-                      style={{
+-                        color: "#6cb752",
+-                        backgroundColor: "transparent",
+-                        height: "20px",
+-                      }}
+-                      onClick={() => {
+-                        addToCart(item);
+-                      }}
+-                    >
+-                      <AddIcon />
+-                    </Button>
+-                  </Button>
+-                </div>
+-                <div style={{ width: "25%" }}>
+-                  <Typography
+-                    variant="subtitle2"
+-                    color="text.secondary"
+-                    component="div"
+-                    display="inline-block"
+-                  >
+-                    <span>&#8377;</span> {item.price}
+-                  </Typography>
+-                </div>
+-              </Box>
+-            </div>
+-          ))}
+-        </Box>
+-        {cartItems.length > 0 ? (
+-          <Box
+-            style={{
+-              display: "flex",
+-              justifyContent: "space-between",
+-              marginTop: "10px",
+-            }}
+-          >
+-            <div>
+-              <Typography variant="h6">
+-                Item Total{":    "}
+-                <span>&#8377;</span>
+-                {getCartTotal()}
+-              </Typography>
+-            </div>
+-            <div>
+-              <PlaceOrderButton />
+-            </div>
+-          </Box>
+-        ) : (
+-          <Typography variant="h4" style={{ color: "gray" }}>
+-            Cart is empty
+-          </Typography>
+-        )}
+-      </Box>
+-    </Box>
+-  );
++	const { cartItems, addToCart, removeFromCart, getCartTotal } =
++		useContext(CartContext);
++	const user = JSON.parse(localStorage.getItem("SRA_userData"));
++	const role = user.role;
++	const navigate = useNavigate();
++	return (
++		<Box
++			style={{
++				width: "100%",
++				textAlign: "center",
++			}}
++		>
++			<PrimarySearchAppBar numberOfCartItems={cartItems.length} role={role} />
++			<Box
++				style={{ display: "inline-block", margin: "0 auto", marginTop: "5em" }}
++				sx={{
++					width: {
++						xs: "100%",
++						sm: "100%",
++						md: "30%",
++						lg: "35%",
++						xl: "35%",
++					},
++				}}
++			>
++				<Box
++					style={{
++						display: "flex",
++						justifyContent: "space-between",
++						borderBottom: "2px solid #D3D3D3",
++						paddingBottom: "15px",
++					}}
++				>
++					<Button
++						onClick={() => navigate("/")}
++						variant="outlined"
++						style={{
++							color: "#ff841c",
++							borderColor: "#ff841c",
++							backgroundColor: "transparent",
++							marginRight: "5%",
++						}}
++					>
++						Menu <RestaurantMenuIcon />
++					</Button>
++					<Button
++						onClick={() => navigate("/orders")}
++						variant="outlined"
++						style={{
++							color: "#ff841c",
++							borderColor: "#ff841c",
++							backgroundColor: "transparent",
++						}}
++					>
++						Orders <TocIcon />
++					</Button>
++				</Box>
++				<Box style={{ marginTop: "30px", borderBottom: "2px solid #D3D3D3" }}>
++					{cartItems.map((item) => (
++						<div key={item._id}>
++							<Box
++								style={{
++									display: "flex",
++								}}
++							>
++								<div
++									style={{
++										marginBottom: "20px",
++										width: "50%",
++										textAlign: "left",
++									}}
++								>
++									<img
++										src={item.isVeg ? "veg.png" : "non-veg.png"}
++										width="20px"
++										height="20px"
++										style={{ position: "relative", top: "5px" }}
++										alt={item.name}
++									/>
++									<Typography display="inline-block">{item.name} </Typography>
++								</div>
++								<div style={{ width: "25%" }}>
++									<Button
++										disableRipple
++										variant="contained"
++										style={{
++											color: "#6cb752",
++											backgroundColor: "white",
++											height: "25px",
++											width: "100px",
++										}}
++									>
++										<Button
++											disableRipple
++											style={{
++												backgroundColor: "transparent",
++												color: "gray",
++												height: "20px",
++												overflow: "hidden",
++											}}
++											onClick={() => {
++												removeFromCart(item);
++											}}
++										>
++											<RemoveIcon />
++										</Button>
++										{item.quantity}
++										<Button
++											disableRipple
++											variant="text"
++											style={{
++												color: "#6cb752",
++												backgroundColor: "transparent",
++												height: "20px",
++											}}
++											onClick={() => {
++												addToCart(item);
++											}}
++										>
++											<AddIcon />
++										</Button>
++									</Button>
++								</div>
++								<div style={{ width: "25%" }}>
++									<Typography
++										variant="subtitle2"
++										color="text.secondary"
++										component="div"
++										display="inline-block"
++									>
++										<span>&#8377;</span> {item.price}
++									</Typography>
++								</div>
++							</Box>
++						</div>
++					))}
++				</Box>
++				{cartItems.length > 0 ? (
++					<Box
++						style={{
++							display: "flex",
++							justifyContent: "space-between",
++							marginTop: "10px",
++						}}
++					>
++						<div>
++							<Typography variant="h6">
++								Item Total{":    "}
++								<span>&#8377;</span>
++								{getCartTotal()}
++							</Typography>
++						</div>
++						<div>
++							<PlaceOrderButton />
++						</div>
++					</Box>
++				) : (
++					<Typography variant="h4" style={{ color: "gray" }}>
++						Cart is empty
++					</Typography>
++				)}
++			</Box>
++		</Box>
++	);
+ }
+diff --git a/src/config/Config.js b/src/config/Config.js
+index c1fdf90..c117604 100644
+--- a/src/config/Config.js
++++ b/src/config/Config.js
+@@ -1,6 +1,10 @@
++// export const baseURL = "http://localhost:5000";
++export const baseURL = "https://smart-restaurant-app-backend-vk9x.onrender.com";
++
++export const API_BASE_URL = `${baseURL}/restaurant/api/v1/`;
++
+ const Config = {
+-	API_BASE_URL:
+-		"https://smart-restaurant-app-backend-vk9x.onrender.com/restaurant/api/v1/",
++	API_BASE_URL,
+ };
+ 
+ export default Config;
+diff --git a/src/context/socket.js b/src/context/socket.js
+index ff76697..e3bc7b3 100644
+--- a/src/context/socket.js
++++ b/src/context/socket.js
+@@ -1,19 +1,15 @@
+ import React from "react";
+ import io from "socket.io-client";
+-import Config from "../config/Config";
+-const x = Config.API_BASE_URL;
++// const x = Config.API_BASE_URL;
++import { baseURL } from "../config/Config";
+ 
+-let connectionString = "https://smart-restaurant-app-backend.vercel.app";
+-if (x.includes("smart-restaurant-app-backend.vercel.app")) {
+-	connectionString = "https://smart-restaurant-app-backend.vercel.app";
+-}
++// let connectionString = "https://smart-restaurant-app-backend.vercel.app";
++// if (x.includes("smart-restaurant-app-backend.vercel.app")) {
++// 	connectionString = "https://smart-restaurant-app-backend.vercel.app";
++// }
+ 
+ // export const socket = io("http://localhost:5000");
+-export const socket = io(
+-	"https://smart-restaurant-app-backend-vk9x.onrender.com",
+-);
+-
+-console.log("logging");
++export const socket = io(baseURL);
+ 
+ socket.on("connect", () => {
+ 	console.log("Socket connected", socket.id);
+diff --git a/src/index.js b/src/index.js
+index 126de8d..f4dfb8e 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
+ import App from "./App";
+ import { SocketContext, socket } from "./context/socket";
+ import "./index.css";
++import AuthProvider from "./context/AuthProvider";
+ 
+ const theme = createTheme({
+ 	palette: {
+@@ -51,9 +52,11 @@ const theme = createTheme({
+ 
+ const root = ReactDOM.createRoot(document.getElementById("root"));
+ root.render(
+-	<ThemeProvider theme={theme}>
+-		<SocketContext.Provider value={socket}>
+-			<App />
+-		</SocketContext.Provider>
+-	</ThemeProvider>,
++	<SocketContext.Provider value={socket}>
++		<ThemeProvider theme={theme}>
++			<AuthProvider>
++				<App />
++			</AuthProvider>
++		</ThemeProvider>
++	</SocketContext.Provider>,
+ );
+diff --git a/src/menu/MenuList.js b/src/menu/MenuList.js
+index 1b64c8c..bd96567 100644
+--- a/src/menu/MenuList.js
++++ b/src/menu/MenuList.js
+@@ -1,140 +1,151 @@
+-import { useEffect, useState, useContext } from "react";
+-import { CartContext } from "../context/Cart";
++// @ts-check
++
++import React, { useEffect, useState, useContext } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { toast } from "react-toastify";
++import { CartContext } from "../context/Cart";
+ import SingleItem from "./SingleItem";
+ import "./viewMenu.css";
+-import GetReq from "../GetReq";
+-import { Box, Button } from "@mui/material";
+ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+-import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
+-import BrowseMenu from "./BrowseMenu";
++import { Box, Button } from "@mui/material";
+ import Animation from "../Animation";
++import GetReq from "../GetReq";
++import PrimarySearchAppBar from "../appbar/PrimarySearchAppBar.js";
+ import Config from "../config/Config.js";
++import useAuth from "../hooks/useAuth.js";
++import getUser from "../utils/getUser.js";
++import BrowseMenu from "./BrowseMenu";
+ const MenuList = () => {
+-  const navigate = useNavigate();
+-  const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-  // console.log(user);
+-  if (!user) {
+-    navigate("/unauthorized");
+-  } else {
+-    const token = user.token;
+-    if (!token) {
+-      // If the token is not present, redirect to Signin page
+-      navigate("/unauthorized");
+-    } else {
+-      // Parse the token to get the expiration timestamp
+-      const { exp } = JSON.parse(atob(token.split(".")[1]));
+-      const currentTime = Math.floor(Date.now() / 1000);
++	// const user = JSON.parse(localStorage.getItem("SRA_userData"));
++	// // console.log(user);
++	// if (!user) {
++	//   navigate("/unauthorized");
++	// } else {
++	//   const token = user.token;
++	//   if (!token) {
++	//     // If the token is not present, redirect to Signin page
++	//     navigate("/unauthorized");
++	//   } else {
++	//     // Parse the token to get the expiration timestamp
++	//     const { exp } = JSON.parse(atob(token.split(".")[1]));
++	//     const currentTime = Math.floor(Date.now() / 1000);
++
++	//     if (currentTime > exp) {
++	//       // If the token is expired, redirect to Signin page
++	//       navigate("/unauthorized");
++	//     }
++	//   }
++	// }
++	const navigate = useNavigate();
++	const { role } = getUser();
++	const [sortedDishes, setSortedDishes] = useState([]);
++	const [cuisines, setCuisines] = useState([]);
++	const [isLoading, setIsLoading] = useState(false);
++
++	const { cartItems, addToCart, getCartTotal, removeFromCart } =
++		useContext(CartContext);
+ 
+-      if (currentTime > exp) {
+-        // If the token is expired, redirect to Signin page
+-        navigate("/unauthorized");
+-      }
+-    }
+-  }
+-  const [sortedDishes, setSortedDishes] = useState([]);
+-  const [cuisines, setCuisines] = useState([]);
+-  const [isLoading, setIsLoading] = useState(false);
+-  const role = user.role;
++	useEffect(() => {
++		GetReq(`${Config.API_BASE_URL}menuItems`, setIsLoading)
++			.then((res) => {
++				const dishes = res;
++				const cuisineCounts = [];
+ 
+-  const { cartItems, addToCart, getCartTotal, removeFromCart } =
+-    useContext(CartContext);
+-  useEffect(() => {
+-    GetReq(`${Config.API_BASE_URL}menuItems`, setIsLoading)
+-      .then((res) => {
+-        let dishes = res;
+-        const cuisineCounts = [];
++				for (const dish of dishes) {
++					const cuisine = dish.cuisine;
++					const pairIndex = cuisineCounts.findIndex(
++						(pair) => pair.cuisine === cuisine,
++					);
+ 
+-        dishes.forEach((dish) => {
+-          const cuisine = dish.cuisine;
+-          const pairIndex = cuisineCounts.findIndex(
+-            (pair) => pair.cuisine === cuisine
+-          );
++					if (pairIndex === -1) {
++						// If the cuisine is not in cuisineCounts, add it as a new pair.
++						cuisineCounts.push({ cuisine, count: 1 });
++					} else {
++						// If the cuisine is already in cuisineCounts, increment its count.
++						cuisineCounts[pairIndex].count++;
++					}
++				}
+ 
+-          if (pairIndex === -1) {
+-            // If the cuisine is not in cuisineCounts, add it as a new pair.
+-            cuisineCounts.push({ cuisine, count: 1 });
+-          } else {
+-            // If the cuisine is already in cuisineCounts, increment its count.
+-            cuisineCounts[pairIndex].count++;
+-          }
+-        });
++				setCuisines(cuisineCounts);
++				dishes.sort((a, b) => a.cuisine.localeCompare(b.cuisine));
++				let currentCuisine = null;
++				const currentGroup = [];
++				const temp = [];
++				for (const dish of dishes) {
++					if (dish.cuisine !== currentCuisine) {
++						currentCuisine = dish.cuisine;
++						currentGroup.length = 0;
++						temp.push(currentGroup);
++					}
++					currentGroup.push(dish);
++				}
++				setSortedDishes(temp);
++			})
++			.catch((err) => {
++				console.log(err);
++				toast.error(`${err}`, {
++					position: "bottom-right",
++					autoClose: 2000,
++					hideProgressBar: false,
++					closeOnClick: true,
++					progress: undefined,
++					theme: "light",
++				});
++			});
++	}, []);
+ 
+-        setCuisines(cuisineCounts);
+-        dishes.sort((a, b) => a.cuisine.localeCompare(b.cuisine));
+-        let currentCuisine = null;
+-        let currentGroup = null;
+-        let temp = [];
+-        for (const dish of dishes) {
+-          if (dish.cuisine !== currentCuisine) {
+-            currentCuisine = dish.cuisine;
+-            currentGroup = [];
+-            temp.push(currentGroup);
+-          }
+-          currentGroup.push(dish);
+-        }
+-        setSortedDishes(temp);
+-        console.log(sortedDishes);
+-      })
+-      .catch((err) => {
+-        toast.error(`${err.response.data.message}`, {
+-          position: "bottom-right",
+-          autoClose: 2000,
+-          hideProgressBar: false,
+-          closeOnClick: true,
+-          progress: undefined,
+-          theme: "light",
+-        });
+-      });
+-  }, []);
+-  const viewCartFooter = (
+-    <Box
+-      className="view-cart-footer"
+-      sx={{
+-        width: { md: "100%", xs: "100%", lg: "60%", xl: "60%" },
+-        marginLeft: { md: "0%", xs: "0%", lg: "20%", xl: "20%" },
+-        marginRight: { md: "0%", xs: "0%", lg: "20%", xl: "20%" },
+-      }}
+-    >
+-      <p style={{ display: "inline-block" }}>
+-        {cartItems.length} {cartItems.length === 1 ? "Item" : "Items"} |
+-        &#x20B9;
+-        {getCartTotal()}
+-      </p>
+-      <Button onClick={() => navigate("/cart")} sx={{ color: "white" }}>
+-        View Cart <ShoppingCartIcon />
+-      </Button>
+-    </Box>
+-  );
+-  return (
+-    <div className="main-div">
+-      <Box marginTop="4.5em">
+-        <BrowseMenu cuisines={cuisines} />
+-      </Box>
+-      <PrimarySearchAppBar numberOfCartItems={cartItems.length} role={role} />
+-      {isLoading && <Animation />}
+-      {sortedDishes.map((menuItems) => (
+-        <Box key={menuItems[0].cuisine} id={menuItems[0].cuisine}>
+-          <Box sx={{ marginLeft: { lg: "25%", xl: "25%", md: "10%" } }}>
+-            <h1 style={{ fontFamily: "'Satisfy', cursive", color: "#ff001f" }}>
+-              {menuItems[0].cuisine}
+-            </h1>
+-          </Box>
+-          {menuItems.map((menuItem) => (
+-            <SingleItem
+-              key={menuItem._id}
+-              menuItem={menuItem}
+-              addToCart={addToCart}
+-              cartItems={cartItems}
+-              removeFromCart={removeFromCart}
+-            />
+-          ))}
+-        </Box>
+-      ))}
+-      <div>{cartItems.length > 0 ? viewCartFooter : <p></p>}</div>
+-    </div>
+-  );
++	const viewCartFooter = (
++		<Box
++			className="view-cart-footer"
++			sx={{
++				width: { md: "100%", xs: "100%", lg: "60%", xl: "60%" },
++				marginLeft: { md: "0%", xs: "0%", lg: "20%", xl: "20%" },
++				marginRight: { md: "0%", xs: "0%", lg: "20%", xl: "20%" },
++			}}
++		>
++			<p style={{ display: "inline-block" }}>
++				{cartItems.length} {cartItems.length === 1 ? "Item" : "Items"} |
++				&#x20B9;
++				{getCartTotal()}
++			</p>
++			<Button
++				onClick={() => {
++					navigate("/cart");
++				}}
++				sx={{ color: "white" }}
++			>
++				View Cart <ShoppingCartIcon />
++			</Button>
++		</Box>
++	);
++	return (
++		<div className="main-div">
++			<Box marginTop="4.5em">
++				<BrowseMenu cuisines={cuisines} />
++			</Box>
++			<PrimarySearchAppBar numberOfCartItems={cartItems.length} role={role} />
++			{isLoading && <Animation />}
++			{sortedDishes.map((menuItems) => (
++				<Box key={menuItems[0].cuisine} id={menuItems[0].cuisine}>
++					<Box sx={{ marginLeft: { lg: "25%", xl: "25%", md: "10%" } }}>
++						<h1 style={{ fontFamily: "'Satisfy', cursive", color: "#ff001f" }}>
++							{menuItems[0].cuisine}
++						</h1>
++					</Box>
++					{menuItems.map((menuItem) => (
++						<SingleItem
++							key={menuItem._id}
++							menuItem={menuItem}
++							addToCart={addToCart}
++							cartItems={cartItems}
++							removeFromCart={removeFromCart}
++						/>
++					))}
++				</Box>
++			))}
++			<div>{cartItems.length > 0 && viewCartFooter}</div>
++		</div>
++	);
+ };
+ 
+ export default MenuList;
+diff --git a/src/order/Checkout.js b/src/order/Checkout.js
+index c3a3c1a..2a60078 100644
+--- a/src/order/Checkout.js
++++ b/src/order/Checkout.js
+@@ -55,7 +55,7 @@ const Checkout = () => {
+ 							authorization: `Bearer ${token}`,
+ 						},
+ 					});
+-					navigate("/menu");
++					navigate("/");
+ 				} catch (err) {
+ 					console.log(err);
+ 				}
+diff --git a/src/signIn/SignIn.js b/src/signIn/SignIn.js
+index 8d38b79..5d1a1c5 100644
+--- a/src/signIn/SignIn.js
++++ b/src/signIn/SignIn.js
+@@ -1,168 +1,176 @@
+-import * as React from "react";
++// @ts-check
++
++import Box from "@mui/material/Box";
+ import Button from "@mui/material/Button";
++import Container from "@mui/material/Container";
+ import CssBaseline from "@mui/material/CssBaseline";
+-import TextField from "@mui/material/TextField";
+-import Link from "@mui/material/Link";
+ import Grid from "@mui/material/Grid";
+-import Box from "@mui/material/Box";
++import Link from "@mui/material/Link";
++import TextField from "@mui/material/TextField";
+ import Typography from "@mui/material/Typography";
+-import Container from "@mui/material/Container";
+-import { createTheme, ThemeProvider } from "@mui/material/styles";
++import { ThemeProvider, createTheme } from "@mui/material/styles";
++import * as React from "react";
+ import { useNavigate } from "react-router-dom";
+ import { toast } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
+ import axios from "axios";
+-import { SocketContext } from "../context/socket";
+ import Config from "../config/Config";
++import { SocketContext } from "../context/socket";
++import useAuth from "../hooks/useAuth";
+ const theme = createTheme({
+-  palette: {
+-    primary: {
+-      main: "#000000",
+-    },
+-  },
+-  typography: {
+-    fontFamily: ["Amaranth", "sans-serif"].join(","),
+-  },
++	palette: {
++		primary: {
++			main: "#000000",
++		},
++	},
++	typography: {
++		fontFamily: ["Amaranth", "sans-serif"].join(","),
++	},
+ });
+ export default function SignIn() {
+-  const navigate = useNavigate();
+-  const socket = React.useContext(SocketContext);
+-  React.useEffect(() => {
+-    const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-    if (user) {
+-      const token = user.token;
+-      if (
+-        token &&
+-        Math.floor(Date.now() / 1000) <
+-          JSON.parse(atob(token.split(".")[1])).exp
+-      ) {
+-        if (user.role === "customer") {
+-          navigate("/menu");
+-        } else {
+-          navigate("/orders");
+-        }
+-      }
+-    }
+-  }, []);
++	const { login } = useAuth();
++	// const navigate = useNavigate();
++	// const socket = React.useContext(SocketContext);
++	// React.useEffect(() => {
++	// 	const user = JSON.parse(localStorage.getItem("SRA_userData"));
++	// 	if (user) {
++	// 		const token = user.token;
++	// 		if (
++	// 			token &&
++	// 			Math.floor(Date.now() / 1000) <
++	// 				JSON.parse(atob(token.split(".")[1])).exp
++	// 		) {
++	// 			if (user.role === "customer") {
++	// 				navigate("/menu");
++	// 			} else {
++	// 				navigate("/orders");
++	// 			}
++	// 		}
++	// 	}
++	// }, []);
+ 
+-  async function handlePost(user) {
+-    try {
+-      let { data } = await axios.post(
+-        `${Config.API_BASE_URL}users/signin`,
+-        user
+-      );
+-      if (data) {
+-        toast.success("logged in successfully", {
+-          position: "bottom-right",
+-          autoClose: 4000,
+-          hideProgressBar: false,
+-          closeOnClick: true,
+-          progress: undefined,
+-          theme: "light",
+-        });
+-        localStorage.setItem("SRA_userData", JSON.stringify(data));
+-      }
+-      if (data.role === "customer") {
+-        socket.emit("join_customer_room", {
+-          customer: data._id,
+-        });
+-        navigate("/menu");
+-      } else {
+-        if (data.role === "chef") {
+-          socket.emit("join_chefs_room", { chef: `${data._id}` });
+-        }
+-        if (data.role === "waiter") {
+-          socket.emit("join_waiters_room", { waiter: `${data._id}` });
+-        }
+-        navigate("/orders");
+-      }
+-    } catch (err) {
+-      toast.error(`${err.response.data.message}`, {
+-        position: "bottom-right",
+-        autoClose: 3000,
+-        hideProgressBar: false,
+-        closeOnClick: true,
+-        progress: undefined,
+-        theme: "light",
+-      });
+-    }
+-  }
++	// async function handlePost(user) {
++	// 	try {
++	// 		const { data } = await axios.post(
++	// 			`${Config.API_BASE_URL}users/signin`,
++	// 			user,
++	// 		);
++	// 		if (data) {
++	// 			toast.success("logged in successfully", {
++	// 				position: "bottom-right",
++	// 				autoClose: 4000,
++	// 				hideProgressBar: false,
++	// 				closeOnClick: true,
++	// 				progress: undefined,
++	// 				theme: "light",
++	// 			});
++	// 			localStorage.setItem("SRA_userData", JSON.stringify(data));
++	// 		}
++	// 		if (data.role === "customer") {
++	// 			socket.emit("join_customer_room", {
++	// 				customer: data._id,
++	// 			});
++	// 			navigate("/menu");
++	// 		} else {
++	// 			if (data.role === "chef") {
++	// 				socket.emit("join_chefs_room", { chef: `${data._id}` });
++	// 			}
++	// 			if (data.role === "waiter") {
++	// 				socket.emit("join_waiters_room", { waiter: `${data._id}` });
++	// 			}
++	// 			navigate("/orders");
++	// 		}
++	// 	} catch (err) {
++	// 		toast.error(`${err.response.data.message}`, {
++	// 			position: "bottom-right",
++	// 			autoClose: 3000,
++	// 			hideProgressBar: false,
++	// 			closeOnClick: true,
++	// 			progress: undefined,
++	// 			theme: "light",
++	// 		});
++	// 	}
++	// }
+ 
+-  const handleSubmit = (event) => {
+-    event.preventDefault();
+-    const data = new FormData(event.currentTarget);
+-    const user = {
+-      email: data.get("email"),
+-      password: data.get("password"),
+-    };
+-    handlePost(user);
+-  };
++	const handleSubmit = (event) => {
++		event.preventDefault();
++		const data = new FormData(event.currentTarget);
++		const user = {
++			email: data.get("email"),
++			password: data.get("password"),
++		};
++		login(user);
++	};
+ 
+-  return (
+-    <ThemeProvider theme={theme}>
+-      <Container component="main" maxWidth="xs">
+-        <CssBaseline />
+-        <Box
+-          sx={{
+-            marginTop: 8,
+-            display: "flex",
+-            flexDirection: "column",
+-            alignItems: "center",
+-          }}
+-        >
+-          {/* <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
++	return (
++		<ThemeProvider theme={theme}>
++			<Container component="main" maxWidth="xs">
++				<CssBaseline />
++				<Box
++					sx={{
++						marginTop: 8,
++						display: "flex",
++						flexDirection: "column",
++						alignItems: "center",
++					}}
++				>
++					{/* <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+             <LockOutlinedIcon />
+           </Avatar> */}
+-          <img src="cartoon.png" style={{ height: 90, width: 90 }}></img>
+-          <Typography component="h1" variant="h5">
+-            Sign in
+-          </Typography>
+-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+-            <TextField
+-              margin="normal"
+-              required
+-              fullWidth
+-              id="email"
+-              label="Email"
+-              type="email"
+-              name="email"
+-              autoComplete="email"
+-              autoFocus
+-            />
+-            <TextField
+-              margin="normal"
+-              required
+-              fullWidth
+-              name="password"
+-              label="Password"
+-              type="password"
+-              id="password"
+-              autoComplete="current-password"
+-            />
+-            <Button
+-              type="submit"
+-              fullWidth
+-              variant="contained"
+-              sx={{ mt: 3, mb: 2 }}
+-              style={{ backgroundColor: "#ff841c", color: "white" }}
+-            >
+-              Sign In
+-            </Button>
+-            <Grid container justifyContent="center">
+-              {/* <Grid item xs>
++					<img
++						src="cartoon.png"
++						style={{ height: 90, width: 90 }}
++						alt="cartoon.png"
++					/>
++					<Typography component="h1" variant="h5">
++						Sign in
++					</Typography>
++					<Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
++						<TextField
++							margin="normal"
++							required
++							fullWidth
++							id="email"
++							label="Email"
++							type="email"
++							name="email"
++							autoComplete="email"
++							autoFocus
++						/>
++						<TextField
++							margin="normal"
++							required
++							fullWidth
++							name="password"
++							label="Password"
++							type="password"
++							id="password"
++							autoComplete="current-password"
++						/>
++						<Button
++							type="submit"
++							fullWidth
++							variant="contained"
++							sx={{ mt: 3, mb: 2 }}
++							style={{ backgroundColor: "#ff841c", color: "white" }}
++						>
++							Sign In
++						</Button>
++						<Grid container justifyContent="center">
++							{/* <Grid item xs>
+                 <Link href="#" variant="body2">
+                   Forgot password?
+                 </Link>
+               </Grid> */}
+-              <Grid item>
+-                <Link href="/signup" variant="body2">
+-                  {"Don't have an account? Sign Up"}
+-                </Link>
+-              </Grid>
+-            </Grid>
+-          </Box>
+-        </Box>
+-      </Container>
+-    </ThemeProvider>
+-  );
++							<Grid item>
++								<Link href="/signup" variant="body2">
++									{"Don't have an account? Sign Up"}
++								</Link>
++							</Grid>
++						</Grid>
++					</Box>
++				</Box>
++			</Container>
++		</ThemeProvider>
++	);
+ }
+diff --git a/src/signup/SignUp.js b/src/signup/SignUp.js
+index 35fa20e..95b350d 100644
+--- a/src/signup/SignUp.js
++++ b/src/signup/SignUp.js
+@@ -7,12 +7,10 @@ import Link from "@mui/material/Link";
+ import TextField from "@mui/material/TextField";
+ import Typography from "@mui/material/Typography";
+ import { ThemeProvider, createTheme } from "@mui/material/styles";
+-import axios from "axios";
+ import * as React from "react";
+-import { useNavigate } from "react-router-dom";
+ import { toast } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
+-import Config from "../config/Config";
++import { Axios } from "../utils/axiosInstance";
+ // TODO remove, this demo shouldn't need to reset the theme.
+ const theme = createTheme({
+ 	palette: {
+@@ -26,53 +24,18 @@ const theme = createTheme({
+ });
+ 
+ export default function SignUp() {
+-	const navigate = useNavigate();
+-	React.useEffect(() => {
+-		const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-		if (user) {
+-			const token = user.token;
+-			if (
+-				token &&
+-				Math.floor(Date.now() / 1000) <
+-					JSON.parse(atob(token.split(".")[1])).exp
+-			) {
+-				if (user.role === "customer") {
+-					navigate("/menu");
+-				} else {
+-					navigate("/orders");
+-				}
+-			}
+-		}
+-	}, [navigate]);
+ 	async function handlePost(newUser) {
+ 		try {
+ 			console.log(`post user ${newUser}`);
+-			const { data } = await axios.post(
+-				`${Config.API_BASE_URL}users/signup`,
+-				newUser,
+-			);
++			const { data } = await Axios.post("/users/signup", newUser);
+ 			console.log(`post data${data}`);
+ 			if (data) {
+-				toast.success(`OTP sent to ${data.email}`, {
+-					position: "bottom-right",
+-					autoClose: 3000,
+-					hideProgressBar: false,
+-					closeOnClick: true,
+-					progress: undefined,
+-					theme: "light",
+-				});
++				toast.success(`OTP sent to ${data.email}`);
+ 				localStorage.setItem("SRA_userData", JSON.stringify(data));
+ 			}
+ 			navigate("/verify-otp");
+ 		} catch (err) {
+-			toast.error(`${err.response.data.message}`, {
+-				position: "bottom-right",
+-				autoClose: 3000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
++			toast.error(`${err.response.data.message}`);
+ 		}
+ 	}
+ 
+@@ -83,14 +46,7 @@ export default function SignUp() {
+ 		const passwordsMatch =
+ 			data.get("password") === data.get("confirm-password");
+ 		if (!passwordsMatch) {
+-			toast.warn("passwords do not match", {
+-				position: "bottom-right",
+-				autoClose: 3000,
+-				hideProgressBar: false,
+-				closeOnClick: true,
+-				progress: undefined,
+-				theme: "light",
+-			});
++			toast.error("Passwords do not match");
+ 		} else {
+ 			const newUser = {
+ 				firstName: data.get("firstName"),
+diff --git a/src/signup/VerifyOTP.js b/src/signup/VerifyOTP.js
+index c3fba1a..7f566a4 100644
+--- a/src/signup/VerifyOTP.js
++++ b/src/signup/VerifyOTP.js
+@@ -1,190 +1,190 @@
+-import * as React from "react";
++import Box from "@mui/material/Box";
+ import Button from "@mui/material/Button";
++import Container from "@mui/material/Container";
+ import CssBaseline from "@mui/material/CssBaseline";
+-import TextField from "@mui/material/TextField";
+ import Grid from "@mui/material/Grid";
+-import Box from "@mui/material/Box";
++import TextField from "@mui/material/TextField";
+ import Typography from "@mui/material/Typography";
+-import Container from "@mui/material/Container";
+-import { createTheme, ThemeProvider } from "@mui/material/styles";
++import { ThemeProvider, createTheme } from "@mui/material/styles";
+ import axios from "axios";
++import * as React from "react";
+ import { toast } from "react-toastify";
+ import "react-toastify/dist/ReactToastify.css";
+-import { useNavigate } from "react-router-dom";
+ import { Link } from "@mui/material";
+-import { SocketContext } from "../context/socket";
++import { useNavigate } from "react-router-dom";
+ import Config from "../config/Config";
++import { SocketContext } from "../context/socket";
+ // TODO remove, this demo shouldn't need to reset the theme.
+ const theme = createTheme({
+-  palette: {
+-    primary: {
+-      main: "#000000",
+-    },
+-  },
++	palette: {
++		primary: {
++			main: "#000000",
++		},
++	},
+ });
+ 
+ export default function VerifyOTP() {
+-  const navigate = useNavigate();
+-  React.useEffect(() => {
+-    const user = JSON.parse(localStorage.getItem("SRA_userData"));
+-    if (user) {
+-      const token = user.token;
+-      if (
+-        token &&
+-        Math.floor(Date.now() / 1000) <
+-          JSON.parse(atob(token.split(".")[1])).exp
+-      ) {
+-        if (user.role === "customer") {
+-          navigate("/menu");
+-        } else {
+-          navigate("/orders");
+-        }
+-      }
+-    }
+-  }, []);
+-  const socket = React.useContext(SocketContext);
+-  async function handleResend() {
+-    const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
+-    try {
+-      const { data } = await axios.post(
+-        `${Config.API_BASE_URL}users/signup`,
+-        newUser
+-      );
++	const navigate = useNavigate();
++	React.useEffect(() => {
++		const user = JSON.parse(localStorage.getItem("SRA_userData"));
++		if (user) {
++			const token = user.token;
++			if (
++				token &&
++				Math.floor(Date.now() / 1000) <
++					JSON.parse(atob(token.split(".")[1])).exp
++			) {
++				if (user.role === "customer") {
++					navigate("/");
++				} else {
++					navigate("/orders");
++				}
++			}
++		}
++	}, []);
++	const socket = React.useContext(SocketContext);
++	async function handleResend() {
++		const newUser = JSON.parse(localStorage.getItem("SRA_userData"));
++		try {
++			const { data } = await axios.post(
++				`${Config.API_BASE_URL}users/signup`,
++				newUser,
++			);
+ 
+-      toast.success(`OTP sent to ${data.email}`, {
+-        position: "bottom-right",
+-        autoClose: 3000,
+-        hideProgressBar: false,
+-        closeOnClick: true,
+-        progress: undefined,
+-        theme: "light",
+-      });
+-      if (data) {
+-        localStorage.setItem("SRA_userData", JSON.stringify(data));
+-      }
+-    } catch (err) {
+-      toast.error(`${err.response.data.message}`, {
+-        position: "bottom-right",
+-        autoClose: 3000,
+-        hideProgressBar: false,
+-        closeOnClick: true,
+-        progress: undefined,
+-        theme: "light",
+-      });
+-    }
+-  }
++			toast.success(`OTP sent to ${data.email}`, {
++				position: "bottom-right",
++				autoClose: 3000,
++				hideProgressBar: false,
++				closeOnClick: true,
++				progress: undefined,
++				theme: "light",
++			});
++			if (data) {
++				localStorage.setItem("SRA_userData", JSON.stringify(data));
++			}
++		} catch (err) {
++			toast.error(`${err.response.data.message}`, {
++				position: "bottom-right",
++				autoClose: 3000,
++				hideProgressBar: false,
++				closeOnClick: true,
++				progress: undefined,
++				theme: "light",
++			});
++		}
++	}
+ 
+-  async function handlePost(postdata) {
+-    console.log(postdata);
+-    try {
+-      const { data } = await axios.post(
+-        `${Config.API_BASE_URL}users/verify-otp`,
+-        postdata
+-      );
++	async function handlePost(postdata) {
++		console.log(postdata);
++		try {
++			const { data } = await axios.post(
++				`${Config.API_BASE_URL}users/verify-otp`,
++				postdata,
++			);
+ 
+-      toast.success("OTP verification successfull", {
+-        position: "bottom-right",
+-        autoClose: 3000,
+-        hideProgressBar: false,
+-        closeOnClick: true,
+-        progress: undefined,
+-        theme: "light",
+-      });
+-      localStorage.setItem("SRA_userData", JSON.stringify(data));
+-      if (data.role === "customer") {
+-        socket.emit("join_customer_room", {
+-          customer: data._id,
+-        });
+-        navigate("/menu");
+-      } else {
+-        if (data.role === "chef") {
+-          socket.emit("join_chefs_room", { chef: `${data._id}` });
+-        }
+-        if (data.role === "waiter") {
+-          socket.emit("join_waiters_room", { waiter: `${data._id}` });
+-        }
+-        navigate("/orders");
+-      }
+-    } catch (err) {
+-      console.log(err.response.data.message);
+-      toast.error(`${err.response.data.message}`, {
+-        position: "bottom-right",
+-        autoClose: 3000,
+-        hideProgressBar: false,
+-        closeOnClick: true,
+-        progress: undefined,
+-        theme: "light",
+-      });
+-    }
+-  }
++			toast.success("OTP verification successfull", {
++				position: "bottom-right",
++				autoClose: 3000,
++				hideProgressBar: false,
++				closeOnClick: true,
++				progress: undefined,
++				theme: "light",
++			});
++			localStorage.setItem("SRA_userData", JSON.stringify(data));
++			if (data.role === "customer") {
++				socket.emit("join_customer_room", {
++					customer: data._id,
++				});
++				navigate("/");
++			} else {
++				if (data.role === "chef") {
++					socket.emit("join_chefs_room", { chef: `${data._id}` });
++				}
++				if (data.role === "waiter") {
++					socket.emit("join_waiters_room", { waiter: `${data._id}` });
++				}
++				navigate("/orders");
++			}
++		} catch (err) {
++			console.log(err.response.data.message);
++			toast.error(`${err.response.data.message}`, {
++				position: "bottom-right",
++				autoClose: 3000,
++				hideProgressBar: false,
++				closeOnClick: true,
++				progress: undefined,
++				theme: "light",
++			});
++		}
++	}
+ 
+-  const handleSubmit = (event) => {
+-    event.preventDefault();
+-    const data = new FormData(event.currentTarget);
+-    console.log(JSON.parse(localStorage.getItem("SRA_userData")).email);
+-    let postdata = {
+-      email: JSON.parse(localStorage.getItem("SRA_userData")).email,
+-      enteredOTP: data.get("code"),
+-    };
+-    handlePost(postdata);
+-  };
+-  return (
+-    <ThemeProvider theme={theme}>
+-      <Container component="main" maxWidth="xs">
+-        <CssBaseline />
+-        <Box
+-          sx={{
+-            marginTop: 3,
+-            display: "flex",
+-            flexDirection: "column",
+-            alignItems: "center",
+-          }}
+-        >
+-          <img src="roll.png" style={{ height: 100, width: 100 }}></img>
+-          <Typography component="h1" variant="h5">
+-            Enter OTP
+-          </Typography>
+-          <Typography component="p">
+-            We've sent an OTP to your email.
+-          </Typography>
++	const handleSubmit = (event) => {
++		event.preventDefault();
++		const data = new FormData(event.currentTarget);
++		console.log(JSON.parse(localStorage.getItem("SRA_userData")).email);
++		let postdata = {
++			email: JSON.parse(localStorage.getItem("SRA_userData")).email,
++			enteredOTP: data.get("code"),
++		};
++		handlePost(postdata);
++	};
++	return (
++		<ThemeProvider theme={theme}>
++			<Container component="main" maxWidth="xs">
++				<CssBaseline />
++				<Box
++					sx={{
++						marginTop: 3,
++						display: "flex",
++						flexDirection: "column",
++						alignItems: "center",
++					}}
++				>
++					<img src="roll.png" style={{ height: 100, width: 100 }}></img>
++					<Typography component="h1" variant="h5">
++						Enter OTP
++					</Typography>
++					<Typography component="p">
++						We've sent an OTP to your email.
++					</Typography>
+ 
+-          <Box
+-            component="form"
+-            onSubmit={(e) => handleSubmit(e)}
+-            sx={{ mt: 3 }}
+-          >
+-            <Grid container spacing={2}>
+-              <Grid item xs={12}>
+-                <TextField
+-                  name="code"
+-                  required
+-                  fullWidth
+-                  id="code"
+-                  label="One time password"
+-                />
+-              </Grid>
+-            </Grid>
+-            <Button
+-              type="submit"
+-              fullWidth
+-              variant="contained"
+-              sx={{ mt: 2, mb: 2 }}
+-              style={{ backgroundColor: "#ff841c", color: "white" }}
+-            >
+-              Verify OTP
+-            </Button>
+-            <Grid item>
+-              <Link
+-                variant="body2"
+-                onClick={handleResend}
+-                style={{ cursor: "pointer" }}
+-              >
+-                Resend OTP
+-              </Link>
+-            </Grid>
+-          </Box>
+-        </Box>
+-      </Container>
+-    </ThemeProvider>
+-  );
++					<Box
++						component="form"
++						onSubmit={(e) => handleSubmit(e)}
++						sx={{ mt: 3 }}
++					>
++						<Grid container spacing={2}>
++							<Grid item xs={12}>
++								<TextField
++									name="code"
++									required
++									fullWidth
++									id="code"
++									label="One time password"
++								/>
++							</Grid>
++						</Grid>
++						<Button
++							type="submit"
++							fullWidth
++							variant="contained"
++							sx={{ mt: 2, mb: 2 }}
++							style={{ backgroundColor: "#ff841c", color: "white" }}
++						>
++							Verify OTP
++						</Button>
++						<Grid item>
++							<Link
++								variant="body2"
++								onClick={handleResend}
++								style={{ cursor: "pointer" }}
++							>
++								Resend OTP
++							</Link>
++						</Grid>
++					</Box>
++				</Box>
++			</Container>
++		</ThemeProvider>
++	);
+ }

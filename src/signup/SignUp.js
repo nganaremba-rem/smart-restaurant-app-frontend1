@@ -7,12 +7,10 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import axios from "axios";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Config from "../config/Config";
+import { Axios } from "../utils/axiosInstance";
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
 	palette: {
@@ -26,53 +24,18 @@ const theme = createTheme({
 });
 
 export default function SignUp() {
-	const navigate = useNavigate();
-	React.useEffect(() => {
-		const user = JSON.parse(localStorage.getItem("SRA_userData"));
-		if (user) {
-			const token = user.token;
-			if (
-				token &&
-				Math.floor(Date.now() / 1000) <
-					JSON.parse(atob(token.split(".")[1])).exp
-			) {
-				if (user.role === "customer") {
-					navigate("/menu");
-				} else {
-					navigate("/orders");
-				}
-			}
-		}
-	}, [navigate]);
 	async function handlePost(newUser) {
 		try {
 			console.log(`post user ${newUser}`);
-			const { data } = await axios.post(
-				`${Config.API_BASE_URL}users/signup`,
-				newUser,
-			);
+			const { data } = await Axios.post("/users/signup", newUser);
 			console.log(`post data${data}`);
 			if (data) {
-				toast.success(`OTP sent to ${data.email}`, {
-					position: "bottom-right",
-					autoClose: 3000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					progress: undefined,
-					theme: "light",
-				});
+				toast.success(`OTP sent to ${data.email}`);
 				localStorage.setItem("SRA_userData", JSON.stringify(data));
 			}
 			navigate("/verify-otp");
 		} catch (err) {
-			toast.error(`${err.response.data.message}`, {
-				position: "bottom-right",
-				autoClose: 3000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				progress: undefined,
-				theme: "light",
-			});
+			toast.error(`${err.response.data.message}`);
 		}
 	}
 
@@ -83,14 +46,7 @@ export default function SignUp() {
 		const passwordsMatch =
 			data.get("password") === data.get("confirm-password");
 		if (!passwordsMatch) {
-			toast.warn("passwords do not match", {
-				position: "bottom-right",
-				autoClose: 3000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				progress: undefined,
-				theme: "light",
-			});
+			toast.error("Passwords do not match");
 		} else {
 			const newUser = {
 				firstName: data.get("firstName"),

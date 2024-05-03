@@ -55,7 +55,7 @@ const Checkout = () => {
 							authorization: `Bearer ${token}`,
 						},
 					});
-					navigate("/menu");
+					navigate("/");
 				} catch (err) {
 					console.log(err);
 				}
