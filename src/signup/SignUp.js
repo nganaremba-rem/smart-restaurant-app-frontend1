@@ -10,6 +10,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import * as React from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 import { Axios } from "../utils/axiosInstance";
 // TODO remove, this demo shouldn't need to reset the theme.
 const theme = createTheme({
@@ -24,6 +25,7 @@ const theme = createTheme({
 });
 
 export default function SignUp() {
+	const navigate = useNavigate();
 	async function handlePost(newUser) {
 		try {
 			console.log(`post user ${newUser}`);
